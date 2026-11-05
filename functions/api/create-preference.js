@@ -14,19 +14,31 @@ export async function onRequestOptions() {
 
 // ROTA DE DIAGNÓSTICO (Permite testar se as chaves estão ativas abrindo no navegador)
 export async function onRequestGet(context) {
-  const hasClientId = Boolean(context.env.PICPAY_CLIENT_ID);
-  const hasClientSecret = Boolean(context.env.PICPAY_CLIENT_SECRET);
-  const legacyToken = Boolean(context.env.PICPAY_TOKEN);
+  const clientId = (
+    context.env.PICPAY_CLIENT_ID ||
+    context.env.CLIENT_ID ||
+    context.env.PICPAY_TOKEN ||
+    ""
+  ).trim();
+
+  const hasClientSecret = Boolean(
+    context.env.PICPAY_CLIENT_SECRET || context.env.CLIENT_SECRET
+  );
+
+  const sellerToken = (context.env.PICPAY_SELLER_TOKEN || "").trim();
 
   return new Response(
     JSON.stringify({
       status: "online",
-      message: "API do PicPay no Cloudflare Pages está operacional",
+      message: "Diagnóstico da API PicPay no Cloudflare Pages",
       config: {
-        PICPAY_CLIENT_ID: hasClientId ? "Configurado com sucesso" : "Ausente / Não cadastrado",
-        PICPAY_CLIENT_SECRET: hasClientSecret ? "Configurado com sucesso" : "Ausente / Não cadastrado",
-        PICPAY_TOKEN_LEGADO: legacyToken ? "Configurado" : "Não utilizado"
-      }
+        CLIENT_ID_DETECTADO: clientId ? `${clientId.slice(0, 8)}... (OK)` : "AUSENTE",
+        CLIENT_SECRET_DETECTADO: hasClientSecret ? "Configurado com sucesso (OK)" : "FALTANDO (Cadastre PICPAY_CLIENT_SECRET no Cloudflare)",
+        SELLER_TOKEN: sellerToken ? "Configurado (Opcional)" : "Não informado"
+      },
+      instrucao: hasClientSecret 
+        ? "Tudo pronto! Se você acabou de salvar as variáveis, lembre-se de ir na aba Implantações e clicar em Reimplantar." 
+        : "ATENÇÃO: Você precisa cadastrar a variável PICPAY_CLIENT_SECRET no Cloudflare Pages e fazer o Redeploy."
     }, null, 2),
     {
       status: 200,
@@ -54,56 +66,74 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Variáveis de ambiente configuradas no Cloudflare Pages (com limpeza de espaços)
-    const clientId = (context.env.PICPAY_CLIENT_ID || "").trim();
-    const clientSecret = (context.env.PICPAY_CLIENT_SECRET || "").trim();
+    // Identificação flexível das credenciais nas variáveis de ambiente da Cloudflare
+    const clientId = (
+      context.env.PICPAY_CLIENT_ID ||
+      context.env.CLIENT_ID ||
+      context.env.PICPAY_CLIENTID ||
+      // Se PICPAY_TOKEN foi preenchido com o Client ID:
+      context.env.PICPAY_TOKEN ||
+      ""
+    ).trim();
+
+    const clientSecret = (
+      context.env.PICPAY_CLIENT_SECRET ||
+      context.env.CLIENT_SECRET ||
+      context.env.PICPAY_CLIENTSECRET ||
+      ""
+    ).trim();
+
     const sellerToken = (context.env.PICPAY_SELLER_TOKEN || "").trim();
 
-    // Fallback de compatibilidade caso ainda use o token estático legado
-    const legacyToken = (context.env.PICPAY_TOKEN || "").trim();
+    // Verificação preventiva contra o erro de token legado:
+    if (!clientSecret) {
+      return new Response(
+        JSON.stringify({ 
+          error: `A variável PICPAY_CLIENT_SECRET está ausente ou vazia no Cloudflare Pages! O código '${clientId}' é o seu Client ID, mas o PicPay exige obrigatoriamente o Client Secret para autenticar via OAuth 2.0.` 
+        }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    if (!clientId) {
+      return new Response(
+        JSON.stringify({ 
+          error: "A variável PICPAY_CLIENT_ID não foi encontrada no painel da Cloudflare Pages." 
+        }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
 
     let accessToken = "";
 
-    // FLUXO MODERNO: OAuth 2.0 com Client ID e Client Secret
-    if (clientId && clientSecret) {
-      const authResponse = await fetch("https://api.picpay.com/oauth2/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({
-          grant_type: "client_credentials",
-          client_id: clientId,
-          client_secret: clientSecret
-        })
-      });
+    // Autenticação oficial OAuth 2.0 (PicPay V2)
+    const authResponse = await fetch("https://api.picpay.com/oauth2/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret
+      })
+    });
 
-      if (!authResponse.ok) {
-        const authErr = await authResponse.text();
-        console.error("Erro na autenticação PicPay OAuth:", authErr);
-        return new Response(
-          JSON.stringify({ 
-            error: "Falha na autenticação com o PicPay. Verifique o PICPAY_CLIENT_ID e PICPAY_CLIENT_SECRET no Cloudflare.", 
-            details: authErr 
-          }),
-          { status: 401, headers: corsHeaders }
-        );
-      }
-
-      const authData = await authResponse.json();
-      accessToken = authData.access_token;
-    } else if (legacyToken) {
-      // Uso do token estático direto
-      accessToken = legacyToken;
-    } else {
+    if (!authResponse.ok) {
+      const authErr = await authResponse.text();
+      console.error("Erro na autenticação PicPay OAuth:", authErr);
       return new Response(
         JSON.stringify({ 
-          error: "Credenciais do PicPay não configuradas. Adicione PICPAY_CLIENT_ID e PICPAY_CLIENT_SECRET no painel da Cloudflare." 
+          error: "Falha ao autenticar Client ID e Client Secret no PicPay. Verifique se o segredo não expirou ou foi digitado com erro.", 
+          details: authErr 
         }),
-        { status: 500, headers: corsHeaders }
+        { status: 401, headers: corsHeaders }
       );
     }
+
+    const authData = await authResponse.json();
+    accessToken = authData.access_token;
 
     // Soma exata de todos os abadás e opções sob encomenda
     const totalAmount = items.reduce((sum, item) => {
@@ -146,28 +176,18 @@ export async function onRequestPost(context) {
       }
     };
 
-    // Montagem dos cabeçalhos da requisição
+    // Montagem dos cabeçalhos da requisição oficial PicPay V2
     const paymentHeaders = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${accessToken}`
     };
 
-    if (clientId && clientSecret) {
-      // Padrão OAuth 2.0 oficial PicPay V2: requer unicamente o Bearer Token
-      paymentHeaders["Authorization"] = `Bearer ${accessToken}`;
-    } else {
-      // Compatibilidade legada V1
-      paymentHeaders["x-picpay-token"] = accessToken;
-      if (sellerToken) {
-        paymentHeaders["x-seller-token"] = sellerToken;
-      }
+    if (sellerToken) {
+      paymentHeaders["x-seller-token"] = sellerToken;
     }
 
-    // Chamada à API de pagamento do PicPay
-    const paymentEndpoint = (clientId && clientSecret)
-      ? "https://api.picpay.com/ecommerce/v2/payments"
-      : "https://appws.picpay.com/ecommerce/public/payments";
-
-    const paymentResponse = await fetch(paymentEndpoint, {
+    // Chamada à API oficial V2 do PicPay
+    const paymentResponse = await fetch("https://api.picpay.com/ecommerce/v2/payments", {
       method: "POST",
       headers: paymentHeaders,
       body: JSON.stringify(paymentPayload)
