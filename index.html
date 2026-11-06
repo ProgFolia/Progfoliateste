@@ -14,7 +14,6 @@
       --neon-cyan: #00f3ff;
       --neon-magenta: #ff0055;
       --neon-lime: #39ff14;
-      --neon-amber: #ffaa00;
       --text-main: #f0f4f8;
       --text-muted: #8a99ad;
       --border-glow: rgba(0, 243, 255, 0.25);
@@ -38,7 +37,7 @@
     }
 
     header {
-      padding: 3rem 1.5rem 1.8rem;
+      padding: 3.5rem 1.5rem 2rem;
       text-align: center;
     }
 
@@ -77,15 +76,15 @@
     }
 
     main {
-      max-width: 1050px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 1rem 1.5rem 5rem;
     }
 
     /* Aviso de Fabricação e Pedidos */
     .fabrication-notice {
-      background: rgba(0, 243, 255, 0.06);
-      border: 1px solid rgba(0, 243, 255, 0.3);
+      background: rgba(0, 243, 255, 0.05);
+      border: 1px solid rgba(0, 243, 255, 0.25);
       border-left: 4px solid var(--neon-cyan);
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
@@ -93,7 +92,7 @@
       display: flex;
       align-items: flex-start;
       gap: 1.2rem;
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.1);
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.08);
     }
 
     .fabrication-icon {
@@ -117,135 +116,83 @@
       color: #d8e5f2;
     }
 
-    .grid-tickets {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3.5rem;
+    /* Container de Compra Centralizado */
+    .ticket-container {
+      max-width: 480px;
+      margin: 0 auto;
     }
 
     .ticket-card {
       background: var(--card-bg);
-      border: 1px solid var(--border-glow);
-      border-radius: 18px;
-      padding: 2.2rem 1.8rem;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
       backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
       position: relative;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
     .ticket-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--neon-cyan);
-      box-shadow: 0 10px 30px rgba(0, 243, 255, 0.15);
-    }
-
-    .ticket-card.featured {
-      border-color: var(--neon-cyan);
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.2);
-    }
-
-    .ticket-card.card-test {
-      border-color: rgba(255, 170, 0, 0.5);
-      background: rgba(30, 25, 20, 0.7);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 35px rgba(0, 243, 255, 0.25);
     }
 
     .ticket-tag {
       position: absolute;
-      top: 1.2rem;
-      right: 1.2rem;
+      top: 1.3rem;
+      right: 1.3rem;
       font-size: 0.75rem;
       font-family: 'Orbitron', sans-serif;
       letter-spacing: 1px;
-      padding: 0.3rem 0.7rem;
+      padding: 0.35rem 0.75rem;
       border-radius: 6px;
-      background: rgba(0, 243, 255, 0.15);
-      color: var(--neon-cyan);
-    }
-
-    .ticket-tag.tag-lote {
       background: rgba(57, 255, 20, 0.15);
       color: var(--neon-lime);
       border: 1px solid rgba(57, 255, 20, 0.4);
     }
 
-    .ticket-tag.tag-test {
-      background: rgba(255, 170, 0, 0.2);
-      color: var(--neon-amber);
-    }
-
     .ticket-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       margin-bottom: 0.3rem;
     }
 
     .ticket-deadline {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--neon-cyan);
-      margin-bottom: 1rem;
+      margin-bottom: 1.4rem;
       letter-spacing: 0.5px;
     }
 
     .ticket-price {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.35rem;
+      font-size: 2.6rem;
       font-weight: 700;
       color: var(--text-main);
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
     }
 
     .ticket-price span {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 500;
       color: var(--text-muted);
     }
 
-    /* Barra de Progresso da Pré-Venda */
-    .progress-box {
-      margin-bottom: 1.4rem;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.75rem 0.9rem;
-      border-radius: 8px;
-    }
-
-    .progress-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      margin-bottom: 0.4rem;
-      color: var(--text-muted);
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-lime));
-      transition: width 0.4s ease;
-    }
-
     .ticket-features {
       list-style: none;
-      margin-bottom: 2rem;
-      flex-grow: 1;
+      margin-bottom: 2.2rem;
     }
 
     .ticket-features li {
-      padding: 0.4rem 0;
+      padding: 0.45rem 0;
       color: var(--text-muted);
-      font-size: 1rem;
+      font-size: 1.05rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .ticket-features li::before {
@@ -256,13 +203,13 @@
 
     .btn-buy {
       width: 100%;
-      padding: 1rem;
+      padding: 1.1rem;
       border: none;
       border-radius: 10px;
       background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
       color: #030a16;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       cursor: pointer;
@@ -275,13 +222,12 @@
       transform: scale(1.02);
     }
 
-    .btn-buy-test {
-      background: linear-gradient(135deg, var(--neon-amber), #ff6600);
-      color: #1a0f00;
-    }
-
-    .btn-buy-test:hover {
-      box-shadow: 0 0 25px rgba(255, 170, 0, 0.5);
+    .btn-buy:disabled {
+      background: #333944;
+      color: #778393;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
     /* Modal Checkout */
@@ -387,8 +333,8 @@
     }
 
     .qty-btn {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
@@ -459,26 +405,15 @@
       </div>
     </section>
 
-    <!-- Cards de Vendas -->
-    <div class="grid-tickets">
-      <!-- Card Dinâmico (Alterna entre Pré-Venda e 1º Lote automaticamente) -->
-      <div class="ticket-card featured" id="mainCard">
-        <span class="ticket-tag tag-lote" id="badgeLote">PRÉ-VENDA EXCLUSIVA</span>
+    <!-- Card de Venda Oficial -->
+    <div class="ticket-container">
+      <div class="ticket-card" id="mainCard">
+        <span class="ticket-tag" id="badgeLote">PRÉ-VENDA EXCLUSIVA</span>
         <h3 class="ticket-title" id="titleLote">Abadá Oficial 2027</h3>
-        <p class="ticket-deadline" id="deadlineLote">Válido até 01/12/2026 ou 60 vendas</p>
+        <p class="ticket-deadline" id="deadlineLote">Válido até 01 de dezembro de 2026</p>
         
         <div class="ticket-price">
-          <span id="labelPreco">R$</span> <span id="priceValue">55,00</span> <span>/ unidade</span>
-        </div>
-
-        <div class="progress-box" id="preVendaProgress">
-          <div class="progress-labels">
-            <span>Progresso da Pré-Venda</span>
-            <span id="salesCounter">0 / 60 vendidos</span>
-          </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div>
-          </div>
+          R$ <span id="priceValue">55,00</span> <span>/ unidade</span>
         </div>
 
         <ul class="ticket-features">
@@ -489,24 +424,7 @@
         </ul>
 
         <button class="btn-buy" id="btnBuyMain" onclick="comprarLoteAtual()">
-          Garantir Abadá (R$ 55,00)
-        </button>
-      </div>
-
-      <!-- Card Homologação / Teste de R$ 1,00 -->
-      <div class="ticket-card card-test">
-        <span class="ticket-tag tag-test">VALIDAÇÃO</span>
-        <h3 class="ticket-title">Teste de Pagamento</h3>
-        <p class="ticket-deadline">Ambiente de homologação ativo</p>
-        <div class="ticket-price">R$ 1,00 <span>/ teste</span></div>
-        <ul class="ticket-features">
-          <li>Emissão instantânea via PIX</li>
-          <li>Gera registro na Planilha Google</li>
-          <li>Valor 100% estornável pelo Mercado Pago</li>
-          <li>Validação completa do sistema</li>
-        </ul>
-        <button class="btn-buy btn-buy-test" onclick="selecionarItem('Abadá Prog Folia - Teste de Validação', 1.00)">
-          Testar por R$ 1,00
+          Garantir Pré-Venda (R$ 55,00)
         </button>
       </div>
     </div>
@@ -546,7 +464,7 @@
 
         <div class="form-group">
           <label for="buyerName">Nome Completo</label>
-          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Roberto Silva" required>
+          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Lucas Ferreira" required>
         </div>
 
         <div class="form-group">
@@ -577,11 +495,11 @@
   </div>
 
   <script>
-    // ==========================================
-    // CONFIGURAÇÃO DOS LOTES E REGRAS DE TRANSIÇÃO
-    // ==========================================
+    // =========================================================================
+    // PAINEL DE CONTROLE INTERNO (GESTÃO DE LOTES E METAS)
+    // =========================================================================
     const CONFIG = {
-      // Altere este número conforme as vendas forem confirmadas na planilha:
+      // Atualize o total de vendas confirmadas aqui para acionar a virada manual:
       vendasConfirmadas: 0,
       limitePreVenda: 60,
 
@@ -606,12 +524,12 @@
           tag: 'VENDAS ENCERRADAS',
           titulo: 'Abadá Oficial 2027 (Encerrado)',
           preco: 65.00,
-          prazo: 'Lote fechado para início da fabricação no dia 26/12',
+          prazo: 'Lote fechado para início da fabricação em 26/12',
           disponivel: false
         };
       }
 
-      // Vira 1º Lote se atingir 60 vendas OU se passar de 01/12/2026
+      // Transição para 1º Lote (se atingir 60 vendas confirmadas OU a partir de 02/12/2026)
       if (atingiuMeta || passouPreVenda) {
         return {
           fase: 'LOTE_1',
@@ -619,8 +537,7 @@
           titulo: 'Abadá Prog Folia 2027 - 1º Lote',
           preco: 65.00,
           prazo: 'Válido até 25 de dezembro de 2026',
-          disponivel: true,
-          motivo: atingiuMeta ? 'Pré-venda esgotada (60 unidades atingidas)' : 'Aberto oficialmente em 02/12'
+          disponivel: true
         };
       }
 
@@ -630,7 +547,7 @@
         tag: 'PRÉ-VENDA EXCLUSIVA',
         titulo: 'Abadá Prog Folia 2027 - Pré-Venda',
         preco: 55.00,
-        prazo: 'Válido até 01/12/2026 (ou 60 unidades)',
+        prazo: 'Válido até 01 de dezembro de 2026',
         disponivel: true
       };
     }
@@ -643,7 +560,6 @@
       const deadline = document.getElementById('deadlineLote');
       const price = document.getElementById('priceValue');
       const btnBuy = document.getElementById('btnBuyMain');
-      const progressBox = document.getElementById('preVendaProgress');
 
       badge.innerText = loteAtual.tag;
       title.innerText = loteAtual.titulo;
@@ -651,26 +567,20 @@
       price.innerText = loteAtual.preco.toFixed(2).replace('.', ',');
 
       if (loteAtual.fase === 'PRE_VENDA') {
-        progressBox.style.display = 'block';
-        const pct = Math.min(100, Math.round((CONFIG.vendasConfirmadas / CONFIG.limitePreVenda) * 100));
-        document.getElementById('salesCounter').innerText = `${CONFIG.vendasConfirmadas} / ${CONFIG.limitePreVenda} vendidos`;
-        document.getElementById('progressBar').style.width = `${pct}%`;
         btnBuy.innerText = `Garantir Pré-Venda (R$ ${loteAtual.preco.toFixed(2).replace('.', ',')})`;
         btnBuy.disabled = false;
       } else if (loteAtual.fase === 'LOTE_1') {
-        progressBox.style.display = 'none';
         btnBuy.innerText = `Garantir 1º Lote (R$ ${loteAtual.preco.toFixed(2).replace('.', ',')})`;
         btnBuy.disabled = false;
       } else {
-        progressBox.style.display = 'none';
-        btnBuy.innerText = 'Vendas Finalizadas';
+        btnBuy.innerText = 'Vendas Encerradas';
         btnBuy.disabled = true;
       }
     }
 
-    // ==========================================
+    // =========================================================================
     // FLUXO DO CHECKOUT
-    // ==========================================
+    // =========================================================================
     let carrinho = {
       titulo: '',
       precoUnitario: 55.00,
@@ -679,12 +589,8 @@
 
     function comprarLoteAtual() {
       if (!loteAtual.disponivel) return;
-      selecionarItem(loteAtual.titulo, loteAtual.preco);
-    }
-
-    function selecionarItem(titulo, preco) {
-      carrinho.titulo = titulo;
-      carrinho.precoUnitario = parseFloat(preco);
+      carrinho.titulo = loteAtual.titulo;
+      carrinho.precoUnitario = parseFloat(loteAtual.preco);
       carrinho.quantidade = 1;
 
       atualizarInterfaceModal();
@@ -705,15 +611,7 @@
       document.getElementById('qtyText').innerText = carrinho.quantidade;
       document.getElementById('modalTitle').innerText = carrinho.titulo;
       document.getElementById('modalSubtitle').innerText = `Total: R$ ${total.toFixed(2).replace('.', ',')} (${carrinho.quantidade}x)`;
-
-      const btnSubmit = document.getElementById('btnSubmit');
-      if (carrinho.precoUnitario === 1.00) {
-        btnSubmit.className = 'btn-buy btn-buy-test';
-        btnSubmit.innerText = `Pagar Teste (R$ ${total.toFixed(2).replace('.', ',')})`;
-      } else {
-        btnSubmit.className = 'btn-buy';
-        btnSubmit.innerText = `Pagar com Mercado Pago (R$ ${total.toFixed(2).replace('.', ',')})`;
-      }
+      document.getElementById('btnSubmit').innerText = `Pagar com Mercado Pago (R$ ${total.toFixed(2).replace('.', ',')})`;
     }
 
     function fecharModal() {
@@ -787,7 +685,6 @@
       }
     });
 
-    // Iniciar renderização dinâmica
     renderizarInterface();
   </script>
 </body>
