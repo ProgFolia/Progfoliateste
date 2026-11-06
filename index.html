@@ -380,26 +380,26 @@
       </div>
 
       <p class="text-[10px] text-center text-gray-400 font-mono">
-        Itens garantidos mediante finalização de pagamento na bilheteria oficial.
+        🔒 Pagamento oficial com emissão instantânea de comprovante.
       </p>
     </div>
 
   </aside>
 
   <!-- ========================================================================= -->
-  <!-- MODAL DE CHECKOUT INTELIGENTE (CHECKOUT DIRETO PICPAY: PIX & CARTÃO) -->
+  <!-- MODAL DE CHECKOUT INTELIGENTE (MERCADO PAGO: PIX & CARTÃO EM ATÉ 12X) -->
   <!-- ========================================================================= -->
   <div id="checkoutModal" class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="relative w-full max-w-lg bg-trance-dark border border-purple-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto">
       
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-green-500 to-emerald-600 text-white flex items-center justify-center text-base shadow-md">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white flex items-center justify-center text-base shadow-md">
             <i class="fa-solid fa-bag-shopping"></i>
           </div>
           <div>
             <h3 class="font-psy font-bold text-sm sm:text-base text-white uppercase tracking-wider">Finalizar Pedido de Abadá</h3>
-            <p class="text-[11px] text-gray-400 font-mono">Prog Folia 2027 • Pagamento Oficial PicPay</p>
+            <p class="text-[11px] text-gray-400 font-mono">Prog Folia 2027 • Bilheteria Oficial</p>
           </div>
         </div>
         <button onclick="closeCheckoutModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
@@ -407,7 +407,7 @@
         </button>
       </div>
 
-      <!-- Resumo do Pedido com Alerta de Quantidade -->
+      <!-- Resumo do Pedido -->
       <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
         <div class="flex items-center justify-between text-xs text-gray-300">
           <span class="uppercase tracking-wider font-semibold">Resumo dos Itens:</span>
@@ -417,7 +417,7 @@
 
         <div id="multiItemNotice" class="hidden mt-2 p-3 rounded-xl bg-purple-900/40 border border-purple-500/40 text-[11px] text-purple-200">
           <i class="fa-solid fa-wand-magic-sparkles text-trance-neonCyan mr-1"></i>
-          <strong>Combo de <span id="multiItemCount">2</span> abadás selecionado:</strong> O PicPay gerará a cobrança exata da soma de todos os itens!
+          <strong>Combo de <span id="multiItemCount">2</span> abadás selecionado:</strong> O valor exato total foi calculado dinamicamente!
         </div>
       </div>
 
@@ -431,7 +431,7 @@
               <i class="fa-regular fa-user"></i>
             </span>
             <input type="text" id="buyerName" required placeholder="Como no documento para retirada" 
-                   class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-green-400 text-xs sm:text-sm">
+                   class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-sky-400 text-xs sm:text-sm">
           </div>
         </div>
 
@@ -445,63 +445,50 @@
                 <i class="fa-brands fa-whatsapp text-green-400"></i>
               </span>
               <input type="tel" id="buyerPhone" required placeholder="(27) 99999-9999" 
-                     class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-green-400 text-xs sm:text-sm font-mono">
+                     class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-sky-400 text-xs sm:text-sm font-mono">
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1">
-              CPF do Titular:
+              E-mail (para receber comprovante):
             </label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
-                <i class="fa-solid fa-id-card"></i>
+                <i class="fa-regular fa-envelope"></i>
               </span>
-              <input type="text" id="buyerCpf" required placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)"
-                     class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-green-400 text-xs sm:text-sm font-mono">
+              <input type="email" id="buyerEmail" required placeholder="seu@email.com" 
+                     class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-sky-400 text-xs sm:text-sm">
             </div>
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1">
-            E-mail (para envio do comprovante):
-          </label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
-              <i class="fa-regular fa-envelope"></i>
-            </span>
-            <input type="email" id="buyerEmail" required placeholder="seu@email.com" 
-                   class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-green-400 text-xs sm:text-sm">
-          </div>
-        </div>
-
         <!-- Banner Explicativo de Métodos -->
-        <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center gap-3 text-[11px] text-emerald-200">
-          <i class="fa-solid fa-circle-check text-green-400 text-base shrink-0"></i>
-          <span>Na próxima tela do PicPay, você escolhe livremente: <strong>PIX à vista</strong>, <strong>Cartão em até 12x</strong> ou <strong>Saldo do App</strong>.</span>
+        <div class="p-3.5 rounded-xl bg-sky-950/40 border border-sky-500/30 flex items-center gap-3 text-[11px] text-sky-200">
+          <i class="fa-solid fa-shield-halved text-sky-400 text-lg shrink-0"></i>
+          <span>Você poderá escolher livremente entre <strong>PIX à vista</strong> (com aprovação imediata) ou <strong>Cartão de Crédito em até 12x</strong>.</span>
         </div>
 
-        <!-- Bloco de Diagnóstico de Erro (visível apenas se houver falha de credenciais/rede) -->
+        <!-- Bloco de Diagnóstico de Erro -->
         <div id="checkoutApiError" class="hidden p-3.5 rounded-xl bg-red-950/60 border border-red-500/50 text-xs text-red-200 space-y-1">
           <div class="font-bold flex items-center gap-2 text-red-400">
             <i class="fa-solid fa-triangle-exclamation"></i>
-            <span id="checkoutApiErrorTitle">Falha na Conexão com o PicPay</span>
+            <span id="checkoutApiErrorTitle">Aviso na Conexão</span>
           </div>
           <p id="checkoutApiErrorMsg" class="font-mono text-[11px] text-gray-300 break-words"></p>
         </div>
 
         <div class="pt-2 space-y-2.5">
-          <!-- Botão 1: Ir para o PicPay Escolher Como Pagar -->
+          <!-- Botão Principal de Checkout -->
           <button type="submit" id="btnMainCheckout" 
-                  class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 text-black font-psy font-black text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 shadow-xl glow-cyan">
-            <i class="fa-solid fa-wallet text-base" id="btnCheckoutIcon"></i>
-            <span id="btnMainCheckoutText">CONTINUAR NO PICPAY (PIX OU CARTÃO)</span>
+                  class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 text-white font-psy font-black text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 shadow-xl glow-cyan">
+            <i class="fa-solid fa-lock text-base" id="btnCheckoutIcon"></i>
+            <span id="btnMainCheckoutText">PAGAR COM PIX OU CARTÃO</span>
           </button>
         </div>
 
-        <p class="text-[10px] text-center text-gray-400 leading-relaxed font-mono" id="checkoutModalSecurityFootnote">
-          🔒 Ambiente Seguro PicPay. Abre direto no seu aplicativo ou com QR Code na tela.
+        <p class="text-[10px] text-center text-gray-400 leading-relaxed font-mono">
+          🔒 Pagamento 100% criptografado e processado pelo Mercado Pago.
         </p>
       </form>
 
@@ -1177,7 +1164,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- JAVASCRIPT: ENGINE DE ÁUDIO, ESTOQUE & CHECKOUT DINÂMICO VIA API PICPAY -->
+  <!-- JAVASCRIPT: ENGINE DE ÁUDIO, ESTOQUE & CHECKOUT DINÂMICO VIA MERCADO PAGO -->
   <!-- ========================================================================= -->
   <script>
     const CONFIG = {
@@ -1190,11 +1177,8 @@
       WHATSAPP_NUMBER: "5527999999999",
       TRACK_NAME: "Prog Folia by Zeppy",
       
-      // ENDPOINT DA API SERVERLESS (Cloudflare Pages Function para PicPay)
+      // ENDPOINT DA API SERVERLESS (Cloudflare Pages Function para Mercado Pago)
       API_CHECKOUT_ENDPOINT: "/api/create-preference",
-
-      // Fallback manual opcional
-      CHECKOUT_PAYMENT_URL: "", 
 
       LOTS: [
         {
@@ -1263,32 +1247,6 @@
       if (withAudio) {
         playAudio();
       }
-    }
-
-    // Máscara de CPF
-    function maskCpf(input) {
-      let v = input.value.replace(/\D/g, "");
-      if (v.length > 11) v = v.substring(0, 11);
-      v = v.replace(/(\d{3})(\d)/, "$1.$2");
-      v = v.replace(/(\d{3})(\d)/, "$1.$2");
-      v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-      input.value = v;
-    }
-
-    // Validador oficial de dígitos verificadores de CPF
-    function isValidCPF(cpf) {
-      const clean = cpf.replace(/\D/g, "");
-      if (clean.length !== 11 || !!clean.match(/(\d)\1{10}/)) return false;
-      let sum = 0, rest;
-      for (let i = 1; i <= 9; i++) sum += parseInt(clean.substring(i - 1, i)) * (11 - i);
-      rest = (sum * 10) % 11;
-      if (rest === 10 || rest === 11) rest = 0;
-      if (rest !== parseInt(clean.substring(9, 10))) return false;
-      sum = 0;
-      for (let i = 1; i <= 10; i++) sum += parseInt(clean.substring(i - 1, i)) * (12 - i);
-      rest = (sum * 10) % 11;
-      if (rest === 10 || rest === 11) rest = 0;
-      return rest === parseInt(clean.substring(10, 11));
     }
 
     // =========================================================================
@@ -1624,7 +1582,7 @@
 
         html += `
           <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 relative group">
-            <div class="w-12 h-14 rounded-xl bg-gradient-to-b from-emerald-500 to-green-600 flex items-center justify-center text-white text-lg shrink-0 shadow-md">
+            <div class="w-12 h-14 rounded-xl bg-gradient-to-b from-sky-500 to-blue-600 flex items-center justify-center text-white text-lg shrink-0 shadow-md">
               <i class="fa-solid fa-shirt"></i>
             </div>
             <div class="flex-1 min-w-0 pr-6">
@@ -1704,10 +1662,10 @@
       if (totalItemsCount > 1) {
         multiItemNotice.classList.remove('hidden');
         multiItemCount.innerText = `${totalItemsCount}`;
-        btnMainCheckoutText.innerText = `PAGAR R$ ${totalAmount.toFixed(2).replace('.', ',')} NO PICPAY`;
+        btnMainCheckoutText.innerText = `PAGAR R$ ${totalAmount.toFixed(2).replace('.', ',')} NO MERCADO PAGO`;
       } else {
         multiItemNotice.classList.add('hidden');
-        btnMainCheckoutText.innerText = `CONTINUAR NO PICPAY (PIX OU CARTÃO)`;
+        btnMainCheckoutText.innerText = `PAGAR COM PIX OU CARTÃO`;
       }
 
       let html = '';
@@ -1733,7 +1691,7 @@
     }
 
     // =========================================================================
-    // EXECUÇÃO DO CHECKOUT DINÂMICO VIA API PICPAY (COM TRATAMENTO COMPLETO)
+    // EXECUÇÃO DO CHECKOUT DINÂMICO VIA MERCADO PAGO
     // =========================================================================
     async function handleProceedPayment(event) {
       event.preventDefault();
@@ -1741,7 +1699,6 @@
       const name = document.getElementById('buyerName').value.trim();
       const phone = document.getElementById('buyerPhone').value.trim();
       const email = document.getElementById('buyerEmail').value.trim();
-      const cpf = document.getElementById('buyerCpf').value.trim();
       const btn = document.getElementById('btnMainCheckout');
       const btnText = document.getElementById('btnMainCheckoutText');
       const btnIcon = document.getElementById('btnCheckoutIcon');
@@ -1750,17 +1707,8 @@
 
       if (errorBox) errorBox.classList.add('hidden');
 
-      if (!name || !phone || !email || !cpf) {
-        showToast("Atenção", "Preencha todos os campos (incluindo o CPF) para emissão do pedido no PicPay.", false);
-        return;
-      }
-
-      if (!isValidCPF(cpf)) {
-        showToast("CPF Inválido", "O PicPay exige um CPF com dígitos verificadores válidos.", false);
-        if (errorBox && errorMsg) {
-          errorBox.classList.remove('hidden');
-          errorMsg.innerText = "CPF matematicamente inválido. O PicPay rejeita números repetidos (ex: 111.111.111-11) ou CPFs aleatórios de teste.";
-        }
+      if (!name || !phone || !email) {
+        showToast("Atenção", "Preencha todos os campos para prosseguir.", false);
         return;
       }
 
@@ -1771,11 +1719,11 @@
       btn.disabled = true;
       btn.classList.add('opacity-75');
       btnIcon.className = "fa-solid fa-spinner animate-spin text-base";
-      btnText.innerText = "CONECTANDO AO PICPAY...";
+      btnText.innerText = "GERANDO TELA DE PAGAMENTO...";
 
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 segundos
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
         const response = await fetch(CONFIG.API_CHECKOUT_ENDPOINT, {
           method: 'POST',
@@ -1783,7 +1731,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            buyer: { name, phone, email, document: cpf },
+            buyer: { name, phone, email },
             items: cart
           }),
           signal: controller.signal
@@ -1794,13 +1742,11 @@
         if (response.ok) {
           const data = await response.json();
           if (data && data.init_point) {
-            // Registra contagem local de venda
             const currentSales = getTotalSalesCount();
             localStorage.setItem('progfolia_total_sales_2027', currentSales + totalItemsCount);
 
-            showToast("Abrindo PicPay...", "Redirecionando para a tela de pagamento oficial.");
+            showToast("Abrindo Bilheteria...", "Redirecionando para a tela de pagamento oficial.");
             
-            // Abre diretamente a tela oficial do PicPay (escolha entre PIX e Cartão)
             setTimeout(() => {
               window.location.href = data.init_point;
             }, 600);
@@ -1808,19 +1754,10 @@
           }
         }
 
-        // Se a resposta retornou erro da Cloudflare/PicPay
         const errPayload = await response.json().catch(() => ({}));
-        let errorDetail = errPayload.error || "O PicPay recusou a emissão do pagamento.";
+        let errorDetail = errPayload.error || "O servidor recusou a criação do pagamento.";
         if (errPayload.details) {
-          if (typeof errPayload.details === 'object') {
-            const detailMsg = errPayload.details.message 
-              || (Array.isArray(errPayload.details.errors) ? errPayload.details.errors.map(e => e.message || `${e.field}: inválido`).join(", ") : null);
-            if (detailMsg && detailMsg !== errPayload.error) {
-              errorDetail += ` — Detalhes: ${detailMsg}`;
-            }
-          } else if (typeof errPayload.details === 'string' && errPayload.details !== errPayload.error) {
-            errorDetail += ` — Detalhes: ${errPayload.details}`;
-          }
+          errorDetail += ` (${typeof errPayload.details === 'string' ? errPayload.details : JSON.stringify(errPayload.details)})`;
         }
         
         console.error("Erro retornado pelo backend:", errPayload);
@@ -1828,20 +1765,20 @@
           errorBox.classList.remove('hidden');
           errorMsg.innerText = errorDetail;
         }
-        showToast("Falha no PicPay", "Verifique o motivo da recusa indicado na tela.", false);
+        showToast("Falha na Operação", "Verifique a mensagem na tela.", false);
 
       } catch (err) {
         console.error("Falha na chamada da API:", err);
         if (errorBox && errorMsg) {
           errorBox.classList.remove('hidden');
-          errorMsg.innerText = `Não foi possível alcançar o endpoint '/api/create-preference'. Motivo: ${err.message}. Verifique se o arquivo functions/api/create-preference.js está no repositório.`;
+          errorMsg.innerText = `Não foi possível alcançar a rota '/api/create-preference': ${err.message}. Verifique se a variável MP_ACCESS_TOKEN está salva na Cloudflare.`;
         }
-        showToast("Sem Conexão", "Não foi possível conectar ao servidor do PicPay.", false);
+        showToast("Sem Conexão", "Não foi possível conectar ao checkout.", false);
       } finally {
         btn.disabled = false;
         btn.classList.remove('opacity-75');
-        btnIcon.className = "fa-solid fa-wallet text-base";
-        btnText.innerText = `PAGAR R$ ${totalAmount.toFixed(2).replace('.', ',')} NO PICPAY`;
+        btnIcon.className = "fa-solid fa-lock text-base";
+        btnText.innerText = `PAGAR R$ ${totalAmount.toFixed(2).replace('.', ',')} NO MERCADO PAGO`;
       }
     }
 

@@ -1,88 +1,77 @@
 // functions/api/create-preference.js
-// Cloudflare Pages Function • Integração Oficial PicPay OAuth 2.0 (API V2)
+// Cloudflare Pages Function • Mercado Pago Checkout Pro (PIX & Cartão em até 12x)
 
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   });
 }
 
-// ROTA DE DIAGNÓSTICO (Permite testar se as chaves estão ativas abrindo no navegador)
+// ROTA DE DIAGNÓSTICO (Acesse no navegador: /api/create-preference)
 export async function onRequestGet(context) {
-  const clientId = (
-    context.env.PICPAY_CLIENT_ID ||
-    context.env.CLIENT_ID ||
-    context.env.PICPAY_TOKEN ||
-    ""
-  ).trim();
+  const token = (context.env.MP_ACCESS_TOKEN || "").trim();
 
-  const clientSecret = (
-    context.env.PICPAY_CLIENT_SECRET ||
-    context.env.CLIENT_SECRET ||
-    ""
-  ).trim();
+  let mpStatus = "Token não configurado nas variáveis do Cloudflare";
 
-  let testResult = "Não testado (credenciais incompletas)";
-
-  if (clientId && clientSecret) {
+  if (token) {
     try {
-      const authTest = await fetch("https://ecommerce-api.svc.picpay.com/oauth2/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          grant_type: "client_credentials",
-          client_id: clientId,
-          client_secret: clientSecret
-        })
+      // Testa conexão com a API do Mercado Pago
+      const testRes = await fetch("https://api.mercadopago.com/users/me", {
+        headers: { "Authorization": `Bearer ${token}` }
       });
-
-      if (authTest.ok) {
-        testResult = "CONECTADO COM SUCESSO! Token gerado no PicPay.";
+      if (testRes.ok) {
+        const userData = await testRes.json();
+        mpStatus = {
+          status: "CONECTADO_COM_SUCESSO",
+          usuario: userData.nickname || userData.first_name || "Lojista Mercado Pago",
+          email: userData.email,
+          pais: userData.country_id
+        };
       } else {
-        const errDetail = await authTest.text();
-        testResult = `Falha na autenticação com o PicPay: ${errDetail}`;
+        mpStatus = {
+          status: "ERRO_DE_TOKEN",
+          detalhe: "O Access Token fornecido é inválido ou expirou."
+        };
       }
     } catch (e) {
-      testResult = `Erro de rede ao conectar: ${e.message}`;
+      mpStatus = { status: "ERRO_DE_REDE", mensagem: e.message };
     }
   }
 
   return new Response(
     JSON.stringify({
-      status: "online",
-      message: "Diagnóstico da Conexão PicPay no Cloudflare Pages",
-      diagnostico_conexao: testResult,
-      configuracao: {
-        CLIENT_ID: clientId ? `${clientId.slice(0, 8)}... (Detectado)` : "NÃO CONFIGURADO",
-        CLIENT_SECRET: clientSecret ? "Detectado com sucesso" : "NÃO CONFIGURADO"
-      },
-      instrucao: testResult.includes("CONECTADO") 
-        ? "Sua API está 100% pronta para processar vendas de abadás!" 
-        : "Cadastre PICPAY_CLIENT_ID e PICPAY_CLIENT_SECRET no Cloudflare Pages e execute um Redeploy."
+      gateway: "Mercado Pago Checkout Pro",
+      servidor: "Cloudflare Pages Function (Edge)",
+      variavel_detectada: token ? `APP_USR-...${token.slice(-6)} (Ativa)` : "FALTANDO: MP_ACCESS_TOKEN",
+      diagnostico_conexao: mpStatus,
+      instrucao: token 
+        ? "Tudo pronto! Seus foliões já podem comprar abadás com PIX ou Cartão em até 12x." 
+        : "Adicione a variável MP_ACCESS_TOKEN nas configurações do Cloudflare Pages e faça o Redeploy."
     }, null, 2),
     {
       status: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json; charset=utf-8"
       }
     }
   );
 }
 
+// CRIAÇÃO DA PREFERÊNCIA DE PAGAMENTO DINÂMICA (POST)
 export async function onRequestPost(context) {
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Content-Type": "application/json",
+    "Content-Type": "application/json; charset=utf-8",
   };
 
   try {
-    const { buyer, items } = await context.request.json();
+    const { buyer, items } = await context.request.json().catch(() => ({}));
 
     if (!items || !items.length) {
       return new Response(
@@ -91,207 +80,86 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Identificação flexível das credenciais nas variáveis de ambiente da Cloudflare
-    const clientId = (
-      context.env.PICPAY_CLIENT_ID ||
-      context.env.CLIENT_ID ||
-      context.env.PICPAY_TOKEN ||
-      ""
-    ).trim();
+    const accessToken = (context.env.MP_ACCESS_TOKEN || "").trim();
 
-    const clientSecret = (
-      context.env.PICPAY_CLIENT_SECRET ||
-      context.env.CLIENT_SECRET ||
-      ""
-    ).trim();
-
-    if (!clientId || !clientSecret) {
+    if (!accessToken) {
       return new Response(
         JSON.stringify({ 
-          error: "Credenciais PICPAY_CLIENT_ID ou PICPAY_CLIENT_SECRET não configuradas no Cloudflare Pages." 
+          error: "MP_ACCESS_TOKEN não configurado no Cloudflare Pages.",
+          details: "Acesse o painel do Cloudflare > Settings > Environment variables e adicione a chave."
         }),
-        { status: 400, headers: corsHeaders }
+        { status: 500, headers: corsHeaders }
       );
     }
 
-    let accessToken = "";
+    // Formata os itens do carrinho para o padrão exigido pelo Mercado Pago
+    const mpItems = items.map((item, idx) => ({
+      id: item.id || `abada_${idx}`,
+      title: `Abadá Prog Folia 2027 [${item.isCustom ? item.customLabel : item.size}]`,
+      quantity: Number(item.quantity),
+      unit_price: Number(item.unitPrice),
+      currency_id: "BRL",
+      description: "Abadá Oficial Dry Fit - Bloco Prog Folia Memento Vivere Vitória/ES"
+    }));
 
-    // 1. Autenticação OAuth 2.0 (tenta primeiro o gateway ecommerce-api oficial)
-    let authResponse = await fetch("https://ecommerce-api.svc.picpay.com/oauth2/token", {
+    // Cria a preferência de pagamento no Mercado Pago
+    const mpResponse = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json"
+        "Authorization": `Bearer ${accessToken}`
       },
       body: JSON.stringify({
-        grant_type: "client_credentials",
-        client_id: clientId,
-        client_secret: clientSecret
+        items: mpItems,
+        payer: {
+          name: buyer?.name || "Folião Prog Folia",
+          email: buyer?.email || "contato@progfolia.com.br",
+          phone: {
+            number: buyer?.phone ? buyer.phone.replace(/\D/g, "") : ""
+          }
+        },
+        back_urls: {
+          success: "https://progfolia-2027.pages.dev/#sucesso",
+          failure: "https://progfolia-2027.pages.dev/#erro",
+          pending: "https://progfolia-2027.pages.dev/#pendente"
+        },
+        auto_return: "approved",
+        statement_descriptor: "PROGFOLIA27",
+        payment_methods: {
+          installments: 12 // Permite parcelamento em até 12x
+        }
       })
     });
 
-    // Fallback de autorização caso a credencial seja da raiz api.picpay.com
-    if (!authResponse.ok) {
-      authResponse = await fetch("https://api.picpay.com/oauth2/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({
-          grant_type: "client_credentials",
-          client_id: clientId,
-          client_secret: clientSecret
-        })
-      });
-    }
-
-    if (!authResponse.ok) {
-      const authErr = await authResponse.text();
-      console.error("Erro na autenticação PicPay OAuth:", authErr);
+    if (!mpResponse.ok) {
+      const errorText = await mpResponse.text();
+      console.error("Erro Mercado Pago API:", errorText);
       return new Response(
         JSON.stringify({ 
-          error: "Falha ao autenticar credenciais no PicPay. Verifique Client ID e Client Secret.", 
-          details: authErr 
+          error: "O Mercado Pago recusou a criação do pagamento.", 
+          details: errorText 
         }),
-        { status: 401, headers: corsHeaders }
+        { status: 502, headers: corsHeaders }
       );
     }
 
-    const authData = await authResponse.json();
-    accessToken = authData.access_token;
+    const prefData = await mpResponse.json();
 
-    // Cálculo do valor total somando itens e sob encomenda
-    const totalAmount = items.reduce((sum, item) => {
-      return sum + (Number(item.unitPrice) * Number(item.quantity));
-    }, 0);
-
-    // Número do pedido único com até 15 caracteres (exigência do PicPay)
-    const referenceId = `PF${Date.now().toString().slice(-10)}`;
-
-    // Data de expiração (7 dias) no formato YYYY-MM-DD
-    const expDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const expDateYMD = expDate.toISOString().split("T")[0];
-
-    // =========================================================================
-    // API OFICIAL DE LINK DE PAGAMENTO / GATEWAY PICPAY
-    // Aceita exatamente Client ID + Client Secret e gera a tela com PIX e Cartão
-    // =========================================================================
-    const paymentLinkPayload = {
-      charge: {
-        name: "Abadá Prog Folia 2027",
-        description: `Prog Folia 2027 • Memento Vivere (${items.map(i => `${i.quantity}x ${i.size}`).join(', ')})`,
-        order_number: referenceId,
-        redirect_url: "https://progfolia-2027.pages.dev/#sucesso",
-        payment: {
-          methods: ["BRCODE", "CREDIT_CARD"],
-          brcode_arrangements: ["PICPAY", "PIX"]
-        },
-        amounts: {
-          product: Math.round(totalAmount * 100), // Valor em centavos (ex: R$ 45,00 = 4500)
-          delivery: 0
-        }
-      },
-      options: {
-        allow_create_pix_key: true,
-        card_max_installment_number: 12,
-        expired_at: expDateYMD
-      }
-    };
-
-    let paymentUrl = "";
-    let qrcodeData = null;
-
-    // Chamada ao endpoint de Link de Pagamento (resolve o erro de Missing required scope)
-    const linkResponse = await fetch("https://ecommerce-api.svc.picpay.com/v1/paymentlink/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-      },
-      body: JSON.stringify(paymentLinkPayload)
-    });
-
-    if (linkResponse.ok) {
-      const linkData = await linkResponse.json();
-      paymentUrl = linkData.link || linkData.deeplink;
-      qrcodeData = linkData.brcode ? { content: linkData.brcode } : null;
-    } else {
-      // Fallback para caso a credencial pertença à Carteira V2 antiga
-      const pad = (n) => String(n).padStart(2, '0');
-      const expiresAtV2 = `${expDate.getFullYear()}-${pad(expDate.getMonth() + 1)}-${pad(expDate.getDate())}T${pad(expDate.getHours())}:${pad(expDate.getMinutes())}:${pad(expDate.getSeconds())}-03:00`;
-
-      const rawDocument = (buyer?.document || "").replace(/\D/g, "");
-      const formattedCpf = rawDocument.length === 11
-        ? rawDocument.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
-        : rawDocument;
-
-      const rawName = (buyer?.name || "Folião Prog Folia").trim();
-      const nameParts = rawName.split(" ");
-
-      const v2Payload = {
-        referenceId: referenceId,
-        callbackUrl: "https://progfolia-2027.pages.dev/api/callback",
-        returnUrl: "https://progfolia-2027.pages.dev/#sucesso",
-        value: Number(totalAmount.toFixed(2)),
-        expiresAt: expiresAtV2,
-        buyer: {
-          firstName: nameParts[0],
-          lastName: nameParts.slice(1).join(" ") || "Capixaba",
-          document: formattedCpf
-        }
-      };
-
-      const v2Response = await fetch("https://api.picpay.com/ecommerce/v2/payments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(v2Payload)
-      });
-
-      if (!v2Response.ok) {
-        const linkErrText = await linkResponse.text();
-        const v2ErrText = await v2Response.text();
-
-        let parsedError = null;
-        try { parsedError = JSON.parse(linkErrText); } catch (_) {}
-        try { if (!parsedError) parsedError = JSON.parse(v2ErrText); } catch (_) {}
-
-        const cleanMsg = parsedError?.errors?.message 
-          || parsedError?.message 
-          || parsedError?.error 
-          || "O PicPay recusou a emissão da cobrança.";
-
-        return new Response(
-          JSON.stringify({
-            error: cleanMsg,
-            details: parsedError || { linkError: linkErrText, v2Error: v2ErrText }
-          }),
-          { status: 502, headers: corsHeaders }
-        );
-      }
-
-      const v2Data = await v2Response.json();
-      paymentUrl = v2Data.paymentUrl;
-      qrcodeData = v2Data.qrcode;
-    }
-
+    // Retorna o link oficial (init_point) gerado com a soma exata dos itens
     return new Response(
       JSON.stringify({
-        id: referenceId,
-        init_point: paymentUrl,
-        qrcode: qrcodeData
+        id: prefData.id,
+        init_point: prefData.init_point
       }),
       { status: 200, headers: corsHeaders }
     );
 
   } catch (err) {
-    console.error("Falha interna na função do Cloudflare Pages:", err);
     return new Response(
-      JSON.stringify({ error: "Erro interno no servidor Cloudflare.", details: err.message }),
+      JSON.stringify({ 
+        error: "Falha interna no servidor Cloudflare.", 
+        details: err.message 
+      }),
       { status: 500, headers: corsHeaders }
     );
   }
