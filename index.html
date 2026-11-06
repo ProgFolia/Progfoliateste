@@ -58,7 +58,7 @@
 
     h1 {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-size: clamp(2.3rem, 6vw, 4.2rem);
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 3px;
@@ -70,9 +70,9 @@
     }
 
     .subtitle {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       color: var(--text-muted);
-      letter-spacing: 4px;
+      letter-spacing: 3px;
       text-transform: uppercase;
     }
 
@@ -82,12 +82,11 @@
       padding: 1rem 1.5rem 5rem;
     }
 
-    /* Banner Modo Teste Ativo */
     .test-banner {
       background: rgba(255, 170, 0, 0.1);
       border: 1px solid var(--neon-amber);
       border-radius: 12px;
-      padding: 1rem;
+      padding: 1rem 1.2rem;
       margin-bottom: 2.5rem;
       display: flex;
       align-items: center;
@@ -97,6 +96,7 @@
 
     .test-banner-icon {
       font-size: 1.8rem;
+      line-height: 1;
     }
 
     .test-banner-text strong {
@@ -167,20 +167,20 @@
 
     .ticket-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       margin-bottom: 0.5rem;
     }
 
     .ticket-price {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 1.2rem;
     }
 
     .ticket-price span {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 500;
       color: var(--text-muted);
     }
@@ -214,7 +214,7 @@
       background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
       color: #030a16;
       font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       cursor: pointer;
@@ -332,6 +332,40 @@
       gap: 1rem;
     }
 
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: var(--neon-cyan);
+      color: #000;
+    }
+
+    .qty-display {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      min-width: 40px;
+      text-align: center;
+    }
+
     .error-msg-box {
       display: none;
       background: rgba(255, 0, 85, 0.15);
@@ -368,80 +402,89 @@
   </header>
 
   <main>
-    <!-- Alerta de Modo de Teste -->
     <div class="test-banner">
       <div class="test-banner-icon">🧪</div>
       <div class="test-banner-text">
-        <strong>Modo de Validação Ativo:</strong>
-        <span>Você pode realizar um pagamento teste de <strong>R$ 1,00</strong> para conferir o redirecionamento ao Mercado Pago e estorná-lo na hora.</span>
+        <strong>Modo de Validação Disponível:</strong>
+        <span>Efetue um pagamento de teste de <strong>R$ 1,00</strong> para testar a rota do Mercado Pago e estorne imediatamente no app.</span>
       </div>
     </div>
 
-    <!-- Seção de Ingressos / Itens -->
     <div class="grid-tickets">
-      <!-- Item Teste de 1 Real -->
+      <!-- Item de Teste -->
       <div class="ticket-card card-test">
         <span class="ticket-tag">HOMOLOGAÇÃO</span>
         <h3 class="ticket-title">Teste de Pagamento</h3>
         <div class="ticket-price">R$ 1,00 <span>/ teste</span></div>
         <ul class="ticket-features">
-          <li>Ambiente de validação ativo</li>
           <li>Emissão de PIX oficial</li>
-          <li>Reconhecimento instantâneo</li>
-          <li>Valor 100% estornável via app</li>
+          <li>Redirecionamento Mercado Pago</li>
+          <li>Sem risco: estorno imediato</li>
+          <li>Garante validação da rota</li>
         </ul>
-        <button class="btn-buy btn-buy-test" onclick="abrirModal('Abadá Prog Folia - Teste de Validação', 1.00, 'TESTE')">
+        <button class="btn-buy btn-buy-test" onclick="selecionarItem('Abadá Prog Folia - Teste de Validação', 1.00)">
           Testar por R$ 1,00
         </button>
       </div>
 
-      <!-- 1º Lote Oficial -->
+      <!-- Item Oficial -->
       <div class="ticket-card">
         <span class="ticket-tag">OFICIAL</span>
         <h3 class="ticket-title">Abadá Oficial 2027</h3>
         <div class="ticket-price">R$ 60,00 <span>/ unidade</span></div>
         <ul class="ticket-features">
           <li>Tecido Dry Fit tecnológico</li>
-          <li>Acesso ao trio no Centro de Vitória</li>
+          <li>Acesso ao trio elétrico</li>
           <li>Arte oficial Memento Vivere</li>
           <li>Pulseira exclusiva de apoiador</li>
         </ul>
-        <button class="btn-buy" onclick="abrirModal('Abadá Prog Folia 2027 - 1º Lote', 60.00, 'OFICIAL')">
+        <button class="btn-buy" onclick="selecionarItem('Abadá Prog Folia 2027 - 1º Lote', 60.00)">
           Garantir Abadá
         </button>
       </div>
     </div>
   </main>
 
-  <!-- Modal de Finalização -->
+  <!-- Modal Checkout -->
   <div class="modal-backdrop" id="modalCheckout">
     <div class="modal-box">
       <button class="modal-close" onclick="fecharModal()">&times;</button>
-      <h3 class="modal-title" id="modalItemTitle">Finalizar Pedido</h3>
-      <p class="modal-desc" id="modalItemSubtitle">Preencha seus dados para emitir a cobrança</p>
+      <h3 class="modal-title" id="modalTitle">Finalizar Pedido</h3>
+      <p class="modal-desc" id="modalSubtitle">Preencha seus dados para prosseguir</p>
 
       <div class="error-msg-box" id="errorBox"></div>
 
       <form id="checkoutForm" onsubmit="enviarPedido(event)">
-        <input type="hidden" id="itemTitle">
-        <input type="hidden" id="itemPrice">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="buyerSize">Tamanho</label>
+            <select class="form-control" id="buyerSize">
+              <option value="P">P</option>
+              <option value="M" selected>M</option>
+              <option value="G">G</option>
+              <option value="GG">GG</option>
+              <option value="XG">XG</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label>Item Selecionado</label>
-          <select class="form-control" id="selectItem" onchange="atualizarItemSelecionado(this)">
-            <option value="1.00" data-title="Abadá Prog Folia - Teste de Validação">🧪 Modo Teste: R$ 1,00</option>
-            <option value="60.00" data-title="Abadá Prog Folia 2027 - 1º Lote">Abadá Oficial 2027: R$ 60,00</option>
-          </select>
+          <div class="form-group">
+            <label>Quantidade</label>
+            <div class="quantity-control">
+              <button type="button" class="qty-btn" onclick="alterarQtd(-1)">-</button>
+              <span class="qty-display" id="qtyText">1</span>
+              <button type="button" class="qty-btn" onclick="alterarQtd(1)">+</button>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="buyerName">Nome Completo</label>
-          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Lucas Ferreira" required>
+          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Roberto Silva" required>
         </div>
 
         <div class="form-group">
           <label for="buyerEmail">E-mail</label>
-          <input type="email" class="form-control" id="buyerEmail" placeholder="seuemail@exemplo.com" required>
+          <input type="email" class="form-control" id="buyerEmail" placeholder="exemplo@gmail.com" required>
         </div>
 
         <div class="form-row">
@@ -455,90 +498,86 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="buyerSize">Tamanho do Abadá</label>
-          <select class="form-control" id="buyerSize">
-            <option value="P">Tamanho P</option>
-            <option value="M" selected>Tamanho M</option>
-            <option value="G">Tamanho G</option>
-            <option value="GG">Tamanho GG</option>
-            <option value="XG">Tamanho XG</option>
-          </select>
-        </div>
-
         <button type="submit" class="btn-buy" id="btnSubmit">
-          Pagar com Mercado Pago
+          Ir para o Mercado Pago
         </button>
 
         <div class="mp-banner">
-          🔒 Processamento Seguro via <span>Mercado Pago</span> (PIX ou Cartão)
+          🔒 Ambiente Seguro <span>Mercado Pago</span> (PIX ou Cartão em até 12x)
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    function abrirModal(title, price, type) {
-      document.getElementById('itemTitle').value = title;
-      document.getElementById('itemPrice').value = price;
-      
-      const select = document.getElementById('selectItem');
-      select.value = price.toFixed(2);
+    // Objeto do carrinho garantido e blindado contra valor zero
+    let carrinho = {
+      titulo: 'Abadá Prog Folia - Teste de Validação',
+      precoUnitario: 1.00,
+      quantidade: 1
+    };
 
-      document.getElementById('modalItemTitle').innerText = title;
-      document.getElementById('modalItemSubtitle').innerText = `Valor total: R$ ${price.toFixed(2).replace('.', ',')}`;
+    function selecionarItem(titulo, preco) {
+      carrinho.titulo = titulo;
+      carrinho.precoUnitario = parseFloat(preco);
+      carrinho.quantidade = 1; // Garante sempre que o carrinho tem no mínimo 1 item
 
-      const btnSubmit = document.getElementById('btnSubmit');
-      if (price === 1.00) {
-        btnSubmit.className = 'btn-buy btn-buy-test';
-        btnSubmit.innerText = 'Pagar Teste de R$ 1,00';
-      } else {
-        btnSubmit.className = 'btn-buy';
-        btnSubmit.innerText = 'Ir para Pagamento';
-      }
-
+      atualizarInterfaceModal();
       document.getElementById('errorBox').style.display = 'none';
       document.getElementById('modalCheckout').classList.add('active');
+    }
+
+    function alterarQtd(delta) {
+      const novaQtd = carrinho.quantidade + delta;
+      if (novaQtd >= 1 && novaQtd <= 10) {
+        carrinho.quantidade = novaQtd;
+        atualizarInterfaceModal();
+      }
+    }
+
+    function atualizarInterfaceModal() {
+      const total = carrinho.precoUnitario * carrinho.quantidade;
+      document.getElementById('qtyText').innerText = carrinho.quantidade;
+      document.getElementById('modalTitle').innerText = carrinho.titulo;
+      document.getElementById('modalSubtitle').innerText = `Total: R$ ${total.toFixed(2).replace('.', ',')} (${carrinho.quantidade}x)`;
+
+      const btnSubmit = document.getElementById('btnSubmit');
+      if (carrinho.precoUnitario === 1.00) {
+        btnSubmit.className = 'btn-buy btn-buy-test';
+        btnSubmit.innerText = `Pagar Teste (R$ ${total.toFixed(2).replace('.', ',')})`;
+      } else {
+        btnSubmit.className = 'btn-buy';
+        btnSubmit.innerText = `Pagar com Mercado Pago (R$ ${total.toFixed(2).replace('.', ',')})`;
+      }
     }
 
     function fecharModal() {
       document.getElementById('modalCheckout').classList.remove('active');
     }
 
-    function atualizarItemSelecionado(selectElem) {
-      const selectedOption = selectElem.options[selectElem.selectedIndex];
-      const price = parseFloat(selectedOption.value);
-      const title = selectedOption.getAttribute('data-title');
-
-      document.getElementById('itemTitle').value = title;
-      document.getElementById('itemPrice').value = price;
-      document.getElementById('modalItemTitle').innerText = title;
-      document.getElementById('modalItemSubtitle').innerText = `Valor total: R$ ${price.toFixed(2).replace('.', ',')}`;
-
-      const btnSubmit = document.getElementById('btnSubmit');
-      if (price === 1.00) {
-        btnSubmit.className = 'btn-buy btn-buy-test';
-        btnSubmit.innerText = 'Pagar Teste de R$ 1,00';
-      } else {
-        btnSubmit.className = 'btn-buy';
-        btnSubmit.innerText = 'Ir para Pagamento';
-      }
-    }
-
     async function enviarPedido(event) {
       event.preventDefault();
-      
+
       const btnSubmit = document.getElementById('btnSubmit');
       const errorBox = document.getElementById('errorBox');
       errorBox.style.display = 'none';
 
+      // Validação do carrinho
+      if (!carrinho || carrinho.quantidade < 1) {
+        errorBox.innerText = 'Selecione pelo menos 1 unidade antes de prosseguir.';
+        errorBox.style.display = 'block';
+        return;
+      }
+
       btnSubmit.disabled = true;
-      const originalText = btnSubmit.innerText;
-      btnSubmit.innerText = 'Conectando ao Mercado Pago...';
+      const textoOriginal = btnSubmit.innerText;
+      btnSubmit.innerText = 'A gerar pagamento...';
+
+      const totalCalculado = carrinho.precoUnitario * carrinho.quantidade;
 
       const payload = {
-        title: document.getElementById('itemTitle').value,
-        price: parseFloat(document.getElementById('itemPrice').value),
+        title: `${carrinho.titulo} (Tam: ${document.getElementById('buyerSize').value})`,
+        price: totalCalculado,
         quantity: 1,
         buyer: {
           name: document.getElementById('buyerName').value,
@@ -559,20 +598,18 @@
         const data = await response.json();
 
         if (response.ok && data.init_point) {
-          // Redireciona diretamente para a tela de pagamento do Mercado Pago
           window.location.href = data.init_point;
         } else {
-          throw new Error(data.error || 'Não foi possível gerar o link de pagamento.');
+          throw new Error(data.error || 'O servidor não retornou o link de pagamento.');
         }
       } catch (err) {
         errorBox.innerText = `Erro: ${err.message}`;
         errorBox.style.display = 'block';
         btnSubmit.disabled = false;
-        btnSubmit.innerText = originalText;
+        btnSubmit.innerText = textoOriginal;
       }
     }
 
-    // Fechar modal ao clicar fora
     window.addEventListener('click', function(e) {
       const modal = document.getElementById('modalCheckout');
       if (e.target === modal) {
