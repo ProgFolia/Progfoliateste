@@ -1,620 +1,1955 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prog Folia 2027 | Memento Vivere</title>
+  <title>Prog Folia - Memento Vivere | O 1º Bloco de Psytrance do ES</title>
+
+  <!-- Favicon apontando para logo.png -->
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Fonts: Orbitron, Space Grotesk & Syne -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Configurações do Tailwind com Paleta Psytrance UV -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            psy: ['Orbitron', 'sans-serif'],
+            syne: ['Syne', 'sans-serif'],
+            sans: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            trance: {
+              black: '#07040d',
+              dark: '#0e071e',
+              card: 'rgba(20, 11, 41, 0.75)',
+              uvPurple: '#8A2BE2',
+              neonPink: '#FF007F',
+              neonCyan: '#00F5D4',
+              neonGreen: '#39FF14',
+              solarGold: '#FFE600',
+              deepBorder: 'rgba(138, 43, 226, 0.35)'
+            }
+          },
+          animation: {
+            'glow-pulse': 'glowPulse 3s infinite alternate',
+            'float-slow': 'floatSlow 5s ease-in-out infinite',
+            'spin-slow': 'spin 30s linear infinite',
+            'spin-reverse': 'spinReverse 25s linear infinite',
+            'equalizer': 'equalizer 1s infinite alternate ease-in-out',
+          },
+          keyframes: {
+            glowPulse: {
+              '0%': { opacity: '0.3', transform: 'scale(1)' },
+              '100%': { opacity: '0.75', transform: 'scale(1.08)' },
+            },
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-14px)' },
+            },
+            spinReverse: {
+              '0%': { transform: 'rotate(360deg)' },
+              '100%': { transform: 'rotate(0deg)' }
+            },
+            equalizer: {
+              '0%': { height: '4px' },
+              '100%': { height: '18px' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    :root {
-      --bg-dark: #08080c;
-      --card-bg: rgba(20, 20, 32, 0.75);
-      --neon-cyan: #00f3ff;
-      --neon-magenta: #ff0055;
-      --neon-lime: #39ff14;
-      --neon-amber: #ffaa00;
-      --text-main: #f0f4f8;
-      --text-muted: #8a99ad;
-      --border-glow: rgba(0, 243, 255, 0.25);
+    /* Neon Glow & Holographic Utilities */
+    .glow-cyan {
+      box-shadow: 0 0 25px rgba(0, 245, 212, 0.45);
+    }
+    .glow-pink {
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.5);
+    }
+    .glow-purple {
+      box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+    }
+    .text-glow-cyan {
+      text-shadow: 0 0 15px rgba(0, 245, 212, 0.7);
+    }
+    .text-glow-pink {
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.7);
+    }
+    .text-glow-yellow {
+      text-shadow: 0 0 15px rgba(255, 230, 0, 0.8);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    /* Custom Psy Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #07040d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00F5D4, #FF007F, #8A2BE2);
+      border-radius: 4px;
     }
 
-    body {
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 15% 20%, rgba(255, 0, 85, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(0, 243, 255, 0.12) 0%, transparent 40%);
-      color: var(--text-main);
-      font-family: 'Rajdhani', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
+    /* Background Geométrico */
+    .mandala-bg {
+      background-image: radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.14) 0%, transparent 70%);
     }
 
-    header {
-      padding: 3rem 1.5rem 2rem;
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 0.35rem 1rem;
-      border: 1px solid var(--neon-cyan);
-      border-radius: 50px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.8rem;
-      color: var(--neon-cyan);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-    }
-
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.3rem, 6vw, 4.2rem);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      line-height: 1.1;
-      background: linear-gradient(135deg, #fff 0%, var(--neon-cyan) 60%, var(--neon-magenta) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    main {
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 1rem 1.5rem 5rem;
-    }
-
-    .test-banner {
-      background: rgba(255, 170, 0, 0.1);
-      border: 1px solid var(--neon-amber);
-      border-radius: 12px;
-      padding: 1rem 1.2rem;
-      margin-bottom: 2.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: 0 0 20px rgba(255, 170, 0, 0.15);
-    }
-
-    .test-banner-icon {
-      font-size: 1.8rem;
-      line-height: 1;
-    }
-
-    .test-banner-text strong {
-      color: var(--neon-amber);
-      font-family: 'Orbitron', sans-serif;
-      display: block;
-      font-size: 0.95rem;
-      letter-spacing: 1px;
-    }
-
-    .test-banner-text span {
-      font-size: 0.95rem;
-      color: #ffd899;
-    }
-
-    .grid-tickets {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3.5rem;
-    }
-
-    .ticket-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-glow);
-      border-radius: 18px;
-      padding: 2.2rem 1.8rem;
-      backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .ticket-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--neon-cyan);
-      box-shadow: 0 10px 30px rgba(0, 243, 255, 0.15);
-    }
-
-    .ticket-card.card-test {
-      border-color: var(--neon-amber);
-      background: rgba(30, 25, 20, 0.85);
-    }
-
-    .ticket-card.card-test:hover {
-      border-color: #ffc44d;
-      box-shadow: 0 10px 30px rgba(255, 170, 0, 0.25);
-    }
-
-    .ticket-tag {
-      position: absolute;
-      top: 1.2rem;
-      right: 1.2rem;
-      font-size: 0.75rem;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 1px;
-      padding: 0.25rem 0.65rem;
-      border-radius: 6px;
-      background: rgba(0, 243, 255, 0.15);
-      color: var(--neon-cyan);
-    }
-
-    .ticket-card.card-test .ticket-tag {
-      background: rgba(255, 170, 0, 0.2);
-      color: var(--neon-amber);
-    }
-
-    .ticket-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.35rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .ticket-price {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 1.2rem;
-    }
-
-    .ticket-price span {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .ticket-features {
-      list-style: none;
-      margin-bottom: 2rem;
-      flex-grow: 1;
-    }
-
-    .ticket-features li {
-      padding: 0.4rem 0;
-      color: var(--text-muted);
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .ticket-features li::before {
-      content: '✓';
-      color: var(--neon-lime);
-      font-weight: bold;
-    }
-
-    .btn-buy {
-      width: 100%;
-      padding: 1rem;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-      color: #030a16;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: all 0.2s ease;
-    }
-
-    .btn-buy:hover {
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
-      transform: scale(1.02);
-    }
-
-    .btn-buy-test {
-      background: linear-gradient(135deg, var(--neon-amber), #ff6600);
-      color: #1a0f00;
-    }
-
-    .btn-buy-test:hover {
-      box-shadow: 0 0 25px rgba(255, 170, 0, 0.5);
-    }
-
-    /* Modal de Compra */
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 4, 8, 0.85);
-      backdrop-filter: blur(8px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      padding: 1rem;
-    }
-
-    .modal-backdrop.active {
-      display: flex;
-    }
-
-    .modal-box {
-      background: #0f1019;
-      border: 1px solid var(--neon-cyan);
-      border-radius: 18px;
-      width: 100%;
-      max-width: 500px;
-      padding: 2.2rem;
-      position: relative;
-      box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 1.2rem;
-      right: 1.2rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-      line-height: 1;
-    }
-
-    .modal-close:hover {
-      color: var(--neon-magenta);
-    }
-
-    .modal-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.35rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .modal-desc {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.1rem;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 1px;
-      margin-bottom: 0.4rem;
-      color: var(--text-muted);
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: #08090f;
-      color: var(--text-main);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.05rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .form-control:focus {
-      border-color: var(--neon-cyan);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .qty-btn {
-      width: 36px;
-      height: 36px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      font-size: 1.2rem;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-
-    .qty-btn:hover {
-      background: var(--neon-cyan);
-      color: #000;
-    }
-
-    .qty-display {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.1rem;
-      min-width: 40px;
-      text-align: center;
-    }
-
-    .error-msg-box {
-      display: none;
-      background: rgba(255, 0, 85, 0.15);
-      border: 1px solid var(--neon-magenta);
-      color: #ff8ca3;
-      padding: 0.85rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
-    .mp-banner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 1rem;
-    }
-
-    .mp-banner span {
-      color: #009ee3;
-      font-weight: 700;
+    /* Transição suave de saída da Splash Screen */
+    .splash-exit {
+      opacity: 0 !important;
+      transform: scale(1.15) !important;
+      pointer-events: none !important;
+      transition: opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
     }
   </style>
 </head>
-<body>
+<body class="bg-trance-black text-gray-100 font-sans antialiased overflow-x-hidden selection:bg-trance-neonPink selection:text-white">
 
-  <header>
-    <div class="badge">Carnaval Eletrônico 2027</div>
-    <h1>PROG FOLIA</h1>
-    <p class="subtitle">Vitória • Espírito Santo | Memento Vivere</p>
-  </header>
+  <!-- TAG DE ÁUDIO OFICIAL -->
+  <audio id="bgAudio" loop preload="auto">
+    <source src="https://www.dropbox.com/scl/fi/tpycehfgz8gd65j1r2hu2/musica.mp3?rlkey=ui7iwxck8v2xpnpsp8otzdex2&st=bigo1en9&raw=1" type="audio/mpeg">
+    <source src="musica.mp3" type="audio/mpeg">
+    <source src="Zeppy%20-%20Prog%20Folia%20(release%20V3).wav" type="audio/wav">
+  </audio>
 
-  <main>
-    <div class="test-banner">
-      <div class="test-banner-icon">🧪</div>
-      <div class="test-banner-text">
-        <strong>Modo de Validação Disponível:</strong>
-        <span>Efetue um pagamento de teste de <strong>R$ 1,00</strong> para testar a rota do Mercado Pago e estorne imediatamente no app.</span>
+  <!-- ========================================================================= -->
+  <!-- 0. TELA DE ABERTURA PSICODÉLICA (SPLASH SCREEN / PORTAL DE ENTRADA) -->
+  <!-- ========================================================================= -->
+  <div id="splashScreen" class="fixed inset-0 z-[9999] bg-trance-black flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden transition-all duration-700">
+    
+    <!-- Efeitos Cósmicos de Fundo -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-trance-uvPurple rounded-full blur-[160px] opacity-40 animate-glow-pulse"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-trance-neonPink rounded-full blur-[170px] opacity-40 animate-glow-pulse" style="animation-delay: 1.5s;"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-trance-neonCyan rounded-full blur-[220px] opacity-15"></div>
+
+    <!-- Canvas de Confetes na Tela Inicial -->
+    <canvas id="splashConfettiCanvas" class="absolute inset-0 pointer-events-none z-0 w-full h-full opacity-65"></canvas>
+
+    <div class="relative z-10 max-w-xl mx-auto flex flex-col items-center space-y-7">
+      
+      <!-- Mandala Geométrica Giratória -->
+      <div class="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center">
+        <svg class="absolute inset-0 w-full h-full animate-spin-slow opacity-75" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="90" fill="none" stroke="#00F5D4" stroke-width="1.5" stroke-dasharray="6 8" />
+          <polygon points="100,10 178,55 178,145 100,190 22,145 22,55" fill="none" stroke="#FF007F" stroke-width="1.5" opacity="0.6"/>
+          <polygon points="100,190 22,145 22,55 100,10 178,55 178,145" fill="none" stroke="#8A2BE2" stroke-width="1.5" transform="rotate(30 100 100)" opacity="0.6"/>
+        </svg>
+
+        <svg class="absolute inset-4 w-[calc(100%-32px)] h-[calc(100%-32px)] animate-spin-reverse opacity-60" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="#FFE600" stroke-width="1" stroke-dasharray="4 6"/>
+          <circle cx="80" cy="80" r="50" fill="none" stroke="#00F5D4" stroke-width="1.5"/>
+        </svg>
+
+        <div class="relative z-10 w-24 h-24 rounded-full bg-trance-dark border-2 border-trance-neonPink/60 flex items-center justify-center shadow-2xl glow-pink">
+          <img src="logo.png" alt="Logo" class="w-16 h-16 object-contain" onerror="this.style.display='none'; document.getElementById('splashFallbackEmblem').classList.remove('hidden');">
+          <div id="splashFallbackEmblem" class="hidden text-4xl text-trance-neonCyan animate-pulse">🕉️</div>
+        </div>
       </div>
-    </div>
 
-    <div class="grid-tickets">
-      <!-- Item de Teste -->
-      <div class="ticket-card card-test">
-        <span class="ticket-tag">HOMOLOGAÇÃO</span>
-        <h3 class="ticket-title">Teste de Pagamento</h3>
-        <div class="ticket-price">R$ 1,00 <span>/ teste</span></div>
-        <ul class="ticket-features">
-          <li>Emissão de PIX oficial</li>
-          <li>Redirecionamento Mercado Pago</li>
-          <li>Sem risco: estorno imediato</li>
-          <li>Garante validação da rota</li>
-        </ul>
-        <button class="btn-buy btn-buy-test" onclick="selecionarItem('Abadá Prog Folia - Teste de Validação', 1.00)">
-          Testar por R$ 1,00
+      <div class="space-y-2">
+        <span class="text-xs uppercase font-psy tracking-[0.3em] text-trance-solarGold font-bold block">
+          O 1º Bloco de Psytrance do ES
+        </span>
+        <h1 class="font-psy font-black text-3xl sm:text-5xl text-white tracking-wider">
+          PROG<span class="text-trance-neonPink">FOLIA</span>
+        </h1>
+        <p class="font-syne text-sm sm:text-base uppercase tracking-[0.25em] text-trance-neonCyan font-semibold">
+          Memento Vivere • Vitória 2027
+        </p>
+      </div>
+
+      <p class="text-xs sm:text-sm text-gray-300 max-w-md font-light leading-relaxed">
+        Em 2027 iremos embarcar em uma jornada para nos lembrar do porquê estamos vivos e celebrar em comunhão com presença e intensidade
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-xs sm:max-w-md pt-2">
+        <button onclick="enterExperience(true)" 
+                class="w-full sm:flex-1 py-4 px-6 rounded-2xl font-psy font-black text-xs sm:text-sm uppercase tracking-wider bg-gradient-to-r from-trance-neonPink via-trance-uvPurple to-trance-neonCyan text-white shadow-2xl hover:scale-105 active:scale-95 transition-all glow-pink flex items-center justify-center gap-3">
+          <i class="fa-solid fa-volume-high text-base animate-pulse"></i>
+          <span>ENTRAR COM SOM</span>
+        </button>
+
+        <button onclick="enterExperience(false)" 
+                class="w-full sm:w-auto py-3.5 px-5 rounded-2xl font-semibold text-xs uppercase tracking-wider bg-white/10 hover:bg-white/15 border border-white/20 text-gray-300 hover:text-white transition-all">
+          <i class="fa-solid fa-volume-xmark mr-1.5"></i> Sem som
         </button>
       </div>
 
-      <!-- Item Oficial -->
-      <div class="ticket-card">
-        <span class="ticket-tag">OFICIAL</span>
-        <h3 class="ticket-title">Abadá Oficial 2027</h3>
-        <div class="ticket-price">R$ 60,00 <span>/ unidade</span></div>
-        <ul class="ticket-features">
-          <li>Tecido Dry Fit tecnológico</li>
-          <li>Acesso ao trio elétrico</li>
-          <li>Arte oficial Memento Vivere</li>
-          <li>Pulseira exclusiva de apoiador</li>
-        </ul>
-        <button class="btn-buy" onclick="selecionarItem('Abadá Prog Folia 2027 - 1º Lote', 60.00)">
-          Garantir Abadá
-        </button>
-      </div>
+      <span class="text-[11px] text-gray-500 font-mono">
+        Frequência recomendada: Fones de ouvido ou Caixas de som 🔊
+      </span>
+
     </div>
-  </main>
+  </div>
 
-  <!-- Modal Checkout -->
-  <div class="modal-backdrop" id="modalCheckout">
-    <div class="modal-box">
-      <button class="modal-close" onclick="fecharModal()">&times;</button>
-      <h3 class="modal-title" id="modalTitle">Finalizar Pedido</h3>
-      <p class="modal-desc" id="modalSubtitle">Preencha seus dados para prosseguir</p>
+  <!-- Ambient Trance Nebulae Glows de Fundo -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-[480px] h-[480px] bg-trance-uvPurple rounded-full blur-[170px] opacity-30 animate-glow-pulse"></div>
+    <div class="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-trance-neonPink rounded-full blur-[190px] opacity-25 animate-glow-pulse" style="animation-delay: 1.5s;"></div>
+    <div class="absolute bottom-1/4 -left-36 w-[450px] h-[450px] bg-trance-neonCyan rounded-full blur-[180px] opacity-20"></div>
+    <div class="absolute -bottom-24 right-1/4 w-[500px] h-[500px] bg-trance-neonGreen rounded-full blur-[190px] opacity-15"></div>
+  </div>
 
-      <div class="error-msg-box" id="errorBox"></div>
+  <!-- Canvas de Confetes de Carnaval no Fundo -->
+  <canvas id="carnivalBgCanvas" class="fixed inset-0 pointer-events-none z-[1] w-full h-full opacity-60"></canvas>
 
-      <form id="checkoutForm" onsubmit="enviarPedido(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="buyerSize">Tamanho</label>
-            <select class="form-control" id="buyerSize">
-              <option value="P">P</option>
-              <option value="M" selected>M</option>
-              <option value="G">G</option>
-              <option value="GG">GG</option>
-              <option value="XG">XG</option>
-            </select>
+  <!-- Toast Global de Notificações -->
+  <div id="toast" class="fixed top-24 right-5 z-50 flex items-center gap-3.5 px-6 py-4 rounded-2xl bg-trance-dark/95 border border-trance-neonCyan/40 text-white shadow-2xl backdrop-blur-2xl transform translate-x-[160%] transition-transform duration-300 ease-out">
+    <div id="toastIcon" class="w-9 h-9 rounded-full flex items-center justify-center bg-trance-neonCyan text-trance-black font-black text-base">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <div>
+      <h4 id="toastTitle" class="font-psy font-bold text-xs uppercase tracking-wider text-trance-neonCyan">Notificação</h4>
+      <p id="toastMessage" class="text-xs text-gray-300">Mensagem do sistema.</p>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. CABEÇALHO / NAVBAR -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-40 bg-trance-black/85 backdrop-blur-xl border-b border-purple-500/20 transition-all duration-300" id="mainHeader">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="relative flex items-center justify-center">
+            <img src="logo.png" alt="Prog Folia Logo" class="h-12 w-auto max-h-12 object-contain rounded-lg transition-transform group-hover:scale-105" 
+                 onerror="this.style.display='none'; document.getElementById('navbarFallbackLogo').classList.remove('hidden');">
+            
+            <div id="navbarFallbackLogo" class="hidden relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-trance-uvPurple via-trance-neonPink to-trance-neonCyan flex items-center justify-center shadow-lg p-0.5">
+              <div class="w-full h-full bg-trance-black rounded-[14px] flex items-center justify-center">
+                <i class="fa-solid fa-atom text-trance-neonCyan text-2xl group-hover:rotate-180 transition-transform duration-700"></i>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Quantidade</label>
-            <div class="quantity-control">
-              <button type="button" class="qty-btn" onclick="alterarQtd(-1)">-</button>
-              <span class="qty-display" id="qtyText">1</span>
-              <button type="button" class="qty-btn" onclick="alterarQtd(1)">+</button>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-psy font-black text-lg sm:text-xl tracking-wider text-white">PROG<span class="text-trance-neonPink">FOLIA</span></span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-trance-neonCyan/15 text-trance-neonCyan font-bold tracking-widest border border-trance-neonCyan/30">ES</span>
+            </div>
+            <span class="block text-[10px] uppercase font-bold tracking-[0.22em] text-trance-solarGold font-syne">
+              Memento Vivere • 2027
+            </span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider">
+          <a href="#sobre" class="hover:text-trance-neonCyan transition-colors">Manifesto</a>
+          <a href="#trajeto" class="hover:text-trance-neonCyan transition-colors">Trajeto Vitória</a>
+          <a href="#lineup" class="hover:text-trance-neonCyan transition-colors">Line-Up</a>
+          <a href="#playlist" class="text-green-400 hover:text-white transition-colors flex items-center gap-1.5">
+            <i class="fa-brands fa-spotify text-sm"></i> Playlist
+          </a>
+          <a href="#abadas" class="text-trance-solarGold hover:text-white transition-colors flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-trance-neonPink animate-ping"></span>
+            Pré-Venda Abadás
+          </a>
+          <a href="#sorteio" class="hover:text-trance-neonCyan transition-colors">Sorteio</a>
+          <a href="#apoio" class="hover:text-trance-neonCyan transition-colors">Contribuição Voluntária</a>
+        </nav>
+
+        <!-- Social & Quick Action Buttons -->
+        <div class="hidden sm:flex items-center gap-3">
+          <a href="https://instagram.com/progfolia" target="_blank" rel="noopener noreferrer" 
+             class="flex items-center gap-2 px-3.5 py-2 rounded-full border border-pink-500/40 bg-pink-500/10 text-pink-300 hover:bg-pink-500 hover:text-white transition-all text-xs font-bold uppercase tracking-wider">
+            <i class="fa-brands fa-instagram text-base"></i>
+            <span>@progfolia</span>
+          </a>
+
+          <button onclick="toggleCartDrawer(true)" aria-label="Abrir carrinho de compras" 
+                  class="relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-purple-500/40 text-white transition-all flex items-center justify-center hover:scale-105 active:scale-95">
+            <i class="fa-solid fa-cart-shopping text-base text-trance-neonCyan"></i>
+            <span id="cartNavBadge" class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-trance-neonPink text-white font-mono font-bold text-[10px] flex items-center justify-center shadow-lg">0</span>
+          </button>
+
+          <a href="#abadas" class="relative group overflow-hidden px-5 py-2.5 rounded-full font-psy font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-trance-neonPink via-trance-uvPurple to-trance-neonCyan text-white shadow-lg hover:shadow-trance-neonPink/40 hover:scale-105 active:scale-95 transition-all">
+            <span class="relative z-10 flex items-center gap-2">
+              <i class="fa-solid fa-shirt"></i> <span>Adquira seu abadá</span>
+            </span>
+          </a>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div class="flex lg:hidden items-center gap-2.5">
+          <button onclick="toggleCartDrawer(true)" aria-label="Abrir carrinho" 
+                  class="relative p-2.5 rounded-xl bg-white/5 border border-purple-500/30 text-white active:scale-95">
+            <i class="fa-solid fa-cart-shopping text-lg text-trance-neonCyan"></i>
+            <span id="mobileCartNavBadge" class="absolute -top-1 -right-1 min-w-[18px] h-4.5 px-1 rounded-full bg-trance-neonPink text-white font-mono font-bold text-[9px] flex items-center justify-center shadow-md">0</span>
+          </button>
+
+          <button id="mobileMenuBtn" aria-label="Abrir menu" class="p-2.5 rounded-xl bg-white/5 border border-purple-500/30 text-white hover:text-trance-neonCyan">
+            <i class="fa-solid fa-bars text-xl" id="menuIcon"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-trance-dark/95 border-b border-purple-500/20 px-6 py-6 space-y-4 backdrop-blur-2xl">
+      <nav class="flex flex-col space-y-3 font-semibold text-sm uppercase tracking-wider">
+        <a href="#sobre" class="mobile-nav-link py-2 border-b border-white/5 hover:text-trance-neonCyan">Manifesto & Origem</a>
+        <a href="#trajeto" class="mobile-nav-link py-2 border-b border-white/5 hover:text-trance-neonCyan">Trajeto em 2027 Vitória - ES</a>
+        <a href="#lineup" class="mobile-nav-link py-2 border-b border-white/5 hover:text-trance-neonCyan">Line-Up & Vertentes</a>
+        <a href="#playlist" class="mobile-nav-link py-2 border-b border-white/5 text-green-400 flex items-center gap-2">
+          <i class="fa-brands fa-spotify"></i> Playlist Colaborativa
+        </a>
+        <a href="#abadas" class="mobile-nav-link py-2 border-b border-white/5 text-trance-solarGold flex items-center justify-between">
+          <span>Pré-Venda de Abadás (R$ 45)</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-trance-neonPink/20 text-trance-neonPink border border-trance-neonPink/40 font-bold">Lote Limitado</span>
+        </a>
+        <a href="#sorteio" class="mobile-nav-link py-2 border-b border-white/5 hover:text-trance-neonCyan">Sorteio Memento Vivere</a>
+        <a href="#apoio" class="mobile-nav-link py-2 hover:text-trance-neonCyan">Contribuição Voluntária</a>
+      </nav>
+      
+      <div class="pt-4 flex flex-col gap-3">
+        <button onclick="toggleCartDrawer(true)" class="mobile-nav-link w-full py-3 rounded-xl border border-trance-neonCyan/40 bg-trance-neonCyan/10 text-trance-neonCyan text-center font-bold flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+          <i class="fa-solid fa-cart-shopping"></i> Ver Carrinho (<span id="mobileCartMenuCount">0 itens</span>)
+        </button>
+        <a href="https://instagram.com/progfolia" target="_blank" class="w-full py-3 rounded-xl border border-pink-500/40 bg-pink-500/10 text-center font-bold text-pink-300 flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+          <i class="fa-brands fa-instagram text-lg"></i> Seguir @progfolia
+        </a>
+        <a href="#abadas" class="mobile-nav-link w-full py-3 rounded-xl bg-gradient-to-r from-trance-neonPink to-trance-uvPurple text-center font-psy font-bold text-xs uppercase tracking-wider text-white shadow-lg">
+          Garantir Abadá Agora
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL / GAVETA DO CARRINHO DE COMPRAS (SIDE DRAWER) -->
+  <!-- ========================================================================= -->
+  <div id="cartBackdrop" onclick="toggleCartDrawer(false)" class="fixed inset-0 z-[9990] bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <aside id="cartDrawer" class="fixed top-0 right-0 bottom-0 z-[9995] w-full max-w-md bg-trance-dark/95 border-l border-purple-500/40 backdrop-blur-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-hidden">
+    
+    <div class="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-trance-neonCyan/15 border border-trance-neonCyan/30 flex items-center justify-center text-trance-neonCyan">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <div>
+          <h3 class="font-psy font-bold text-base text-white uppercase tracking-wider">Seu Carrinho</h3>
+          <p class="text-[11px] text-gray-400 font-mono" id="cartDrawerSubtitle">0 itens adicionados</p>
+        </div>
+      </div>
+      <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+    </div>
+
+    <div id="cartItemsList" class="flex-1 overflow-y-auto py-4 space-y-3.5 my-2 pr-1"></div>
+
+    <div class="pt-4 border-t border-white/10 shrink-0 space-y-3">
+      <div class="flex items-center justify-between text-xs text-gray-300">
+        <span class="uppercase tracking-wider font-semibold">Subtotal Geral:</span>
+        <span class="font-psy font-black text-2xl text-trance-solarGold" id="cartTotalDisplay">R$ 0,00</span>
+      </div>
+
+      <div class="flex gap-2.5">
+        <button onclick="checkoutCart()" id="btnCheckoutCart" 
+                class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-trance-neonPink via-trance-uvPurple to-trance-neonCyan text-white font-psy font-bold text-xs uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg glow-pink">
+          <i class="fa-solid fa-lock"></i>
+          <span>Finalizar Compra</span>
+        </button>
+        <button onclick="clearCart()" title="Esvaziar carrinho" 
+                class="px-3.5 py-3.5 rounded-xl bg-white/5 hover:bg-red-500/20 border border-white/10 text-gray-400 hover:text-red-400 transition-colors">
+          <i class="fa-regular fa-trash-can"></i>
+        </button>
+      </div>
+
+      <p class="text-[10px] text-center text-gray-400 font-mono">
+        🔒 Pagamento oficial com emissão instantânea de comprovante.
+      </p>
+    </div>
+
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE CHECKOUT INTELIGENTE (MERCADO PAGO: PIX & CARTÃO EM ATÉ 12X) -->
+  <!-- ========================================================================= -->
+  <div id="checkoutModal" class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="relative w-full max-w-lg bg-trance-dark border border-purple-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white flex items-center justify-center text-base shadow-md">
+            <i class="fa-solid fa-bag-shopping"></i>
+          </div>
+          <div>
+            <h3 class="font-psy font-bold text-sm sm:text-base text-white uppercase tracking-wider">Finalizar Pedido de Abadá</h3>
+            <p class="text-[11px] text-gray-400 font-mono">Prog Folia 2027 • Bilheteria Oficial</p>
+          </div>
+        </div>
+        <button onclick="closeCheckoutModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Resumo do Pedido -->
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs text-gray-300">
+          <span class="uppercase tracking-wider font-semibold">Resumo dos Itens:</span>
+          <span class="font-psy font-bold text-trance-solarGold text-sm sm:text-base" id="modalOrderTotal">R$ 0,00</span>
+        </div>
+        <div id="modalOrderSummaryList" class="text-xs text-gray-400 space-y-1 font-mono"></div>
+
+        <div id="multiItemNotice" class="hidden mt-2 p-3 rounded-xl bg-purple-900/40 border border-purple-500/40 text-[11px] text-purple-200">
+          <i class="fa-solid fa-wand-magic-sparkles text-trance-neonCyan mr-1"></i>
+          <strong>Combo de <span id="multiItemCount">2</span> abadás selecionado:</strong> O valor exato total foi calculado dinamicamente!
+        </div>
+      </div>
+
+      <form id="checkoutForm" onsubmit="handleProceedPayment(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1">
+            Nome Completo do Titular:
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+              <i class="fa-regular fa-user"></i>
+            </span>
+            <input type="text" id="buyerName" required placeholder="Como no documento para retirada" 
+                   class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-sky-400 text-xs sm:text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1">
+              WhatsApp (com DDD):
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                <i class="fa-brands fa-whatsapp text-green-400"></i>
+              </span>
+              <input type="tel" id="buyerPhone" required placeholder="(27) 99999-9999" 
+                     class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-sky-400 text-xs sm:text-sm font-mono">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1">
+              E-mail (para receber comprovante):
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                <i class="fa-regular fa-envelope"></i>
+              </span>
+              <input type="email" id="buyerEmail" required placeholder="seu@email.com" 
+                     class="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-white placeholder-gray-500 focus:outline-none focus:border-sky-400 text-xs sm:text-sm">
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="buyerName">Nome Completo</label>
-          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Roberto Silva" required>
+        <!-- Banner Explicativo de Métodos -->
+        <div class="p-3.5 rounded-xl bg-sky-950/40 border border-sky-500/30 flex items-center gap-3 text-[11px] text-sky-200">
+          <i class="fa-solid fa-shield-halved text-sky-400 text-lg shrink-0"></i>
+          <span>Você poderá escolher livremente entre <strong>PIX à vista</strong> (com aprovação imediata) ou <strong>Cartão de Crédito em até 12x</strong>.</span>
         </div>
 
-        <div class="form-group">
-          <label for="buyerEmail">E-mail</label>
-          <input type="email" class="form-control" id="buyerEmail" placeholder="exemplo@gmail.com" required>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="buyerCpf">CPF</label>
-            <input type="text" class="form-control" id="buyerCpf" placeholder="000.000.000-00" required>
+        <!-- Bloco de Diagnóstico de Erro -->
+        <div id="checkoutApiError" class="hidden p-3.5 rounded-xl bg-red-950/60 border border-red-500/50 text-xs text-red-200 space-y-1">
+          <div class="font-bold flex items-center gap-2 text-red-400">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="checkoutApiErrorTitle">Aviso na Conexão</span>
           </div>
-          <div class="form-group">
-            <label for="buyerPhone">WhatsApp</label>
-            <input type="text" class="form-control" id="buyerPhone" placeholder="(27) 99999-9999" required>
-          </div>
+          <p id="checkoutApiErrorMsg" class="font-mono text-[11px] text-gray-300 break-words"></p>
         </div>
 
-        <button type="submit" class="btn-buy" id="btnSubmit">
-          Ir para o Mercado Pago
-        </button>
-
-        <div class="mp-banner">
-          🔒 Ambiente Seguro <span>Mercado Pago</span> (PIX ou Cartão em até 12x)
+        <div class="pt-2 space-y-2.5">
+          <!-- Botão Principal de Checkout -->
+          <button type="submit" id="btnMainCheckout" 
+                  class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 text-white font-psy font-black text-xs sm:text-sm uppercase tracking-wider hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 shadow-xl glow-cyan">
+            <i class="fa-solid fa-lock text-base" id="btnCheckoutIcon"></i>
+            <span id="btnMainCheckoutText">PAGAR COM PIX OU CARTÃO</span>
+          </button>
         </div>
+
+        <p class="text-[10px] text-center text-gray-400 leading-relaxed font-mono">
+          🔒 Pagamento 100% criptografado e processado pelo Mercado Pago.
+        </p>
       </form>
+
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- 2. PLAYER DE ÁUDIO FLUTUANTE -->
+  <!-- ========================================================================= -->
+  <div id="audioDock" class="fixed bottom-6 left-6 z-40 flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-trance-dark/95 border border-purple-500/40 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:border-trance-neonCyan/50">
+    
+    <button onclick="toggleAudioPlayback()" id="audioPlayBtn" aria-label="Tocar ou pausar música" 
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-trance-neonPink to-trance-uvPurple text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform shrink-0">
+      <i class="fa-solid fa-play text-sm" id="audioPlayIcon"></i>
+    </button>
+
+    <div class="pr-1 min-w-[130px] max-w-[190px]">
+      <div class="flex items-center justify-between gap-2">
+        <span id="playerTrackName" class="font-psy font-bold text-[9.5px] sm:text-[10px] text-white tracking-wide whitespace-nowrap">Prog Folia by Zeppy</span>
+      </div>
+      
+      <div class="flex items-center gap-2 mt-1">
+        <div class="flex items-end gap-1 h-3.5" id="equalizerContainer">
+          <span class="w-1 bg-trance-neonPink rounded-full h-1"></span>
+          <span class="w-1 bg-trance-neonCyan rounded-full h-1"></span>
+          <span class="w-1 bg-trance-solarGold rounded-full h-1"></span>
+          <span class="w-1 bg-trance-neonGreen rounded-full h-1"></span>
+        </div>
+        <span id="audioStatusText" class="text-[9px] text-gray-400 font-mono">Pronto</span>
+      </div>
+    </div>
+
+    <button onclick="toggleAudioMute()" id="audioMuteBtn" class="text-gray-400 hover:text-trance-neonCyan text-xs p-1" title="Mutar/Desmutar">
+      <i class="fa-solid fa-volume-high" id="audioMuteIcon"></i>
+    </button>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="relative z-10 pt-20">
+
+    <!-- 3. HERO SECTION -->
+    <section class="relative min-h-[92vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-20 overflow-hidden mandala-bg">
+      <div class="max-w-5xl mx-auto text-center space-y-8">
+        
+        <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 border border-purple-500/30 backdrop-blur-md shadow-inner">
+          <span class="w-2.5 h-2.5 rounded-full bg-trance-neonCyan animate-ping"></span>
+          <span class="text-xs sm:text-sm font-bold tracking-widest uppercase text-trance-neonCyan font-psy">
+            O 1º Bloco de Psytrance do Espírito Santo
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <h1 class="font-psy font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.05] text-white">
+            PROG FOLIA <br>
+            <span class="bg-gradient-to-r from-trance-neonCyan via-trance-neonPink to-trance-solarGold bg-clip-text text-transparent text-glow-pink">
+              MEMENTO VIVERE
+            </span>
+          </h1>
+          <p class="font-syne text-sm sm:text-lg md:text-xl uppercase tracking-[0.25em] text-trance-solarGold font-semibold">
+            EM 2027 • Vitória - ES
+          </p>
+        </div>
+
+        <p class="max-w-2xl mx-auto text-base sm:text-lg text-gray-300 font-light leading-relaxed">
+          O Carnaval e o Psytrance, não só podem coexistir, como se completam! Em 2027 venha fazer parte de mais um capítulo dessa história e vamos juntos nos lembrar que estamos vivos!
+        </p>
+
+        <div class="flex items-center justify-center pt-1">
+          <div class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-white/5 border border-purple-500/30 text-xs sm:text-sm text-trance-neonCyan font-semibold backdrop-blur-sm shadow-inner">
+            <i class="fa-solid fa-eye text-trance-neonPink animate-pulse"></i>
+            <span>Mais informações em breve, fique de olho em nossas redes</span>
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <div class="text-xs uppercase tracking-widest text-gray-400 font-psy font-semibold mb-3">
+            ⏳ Contagem Regressiva para que celebremos juntos a vida na avenida:
+          </div>
+          <div class="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-lg mx-auto">
+            <div class="bg-trance-card border border-trance-neonCyan/30 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-md glow-cyan">
+              <span id="countdownDays" class="block font-psy font-black text-2xl sm:text-4xl md:text-5xl text-trance-neonCyan">00</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase text-gray-400 tracking-wider">Dias</span>
+            </div>
+            <div class="bg-trance-card border border-trance-neonPink/30 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-md glow-pink">
+              <span id="countdownHours" class="block font-psy font-black text-2xl sm:text-4xl md:text-5xl text-trance-neonPink">00</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase text-gray-400 tracking-wider">Horas</span>
+            </div>
+            <div class="bg-trance-card border border-trance-uvPurple/40 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-md glow-purple">
+              <span id="countdownMinutes" class="block font-psy font-black text-2xl sm:text-4xl md:text-5xl text-purple-300">00</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase text-gray-400 tracking-wider">Minutos</span>
+            </div>
+            <div class="bg-trance-card border border-trance-solarGold/30 rounded-2xl p-3 sm:p-4 text-center backdrop-blur-md">
+              <span id="countdownSeconds" class="block font-psy font-black text-2xl sm:text-4xl md:text-5xl text-trance-solarGold">00</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase text-gray-400 tracking-wider">Segundos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <a href="#abadas" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-psy font-bold text-sm tracking-wider uppercase bg-gradient-to-r from-trance-neonPink via-trance-uvPurple to-trance-neonCyan text-white shadow-2xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3 glow-pink">
+            <i class="fa-solid fa-shirt text-lg"></i>
+            <span id="heroAbadaPrice">GARANTIR ABADÁ • PRÉ-VENDA (R$ 45)</span>
+          </a>
+          <a href="#trajeto" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-wider bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-trance-neonCyan"></i>
+            <span>Ver Trajeto Oficial</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 4. SEÇÃO MANIFESTO / SOBRE -->
+    <section id="sobre" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="bg-gradient-to-br from-trance-card to-purple-950/40 rounded-3xl border border-purple-500/20 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-widest font-psy">
+            <i class="fa-solid fa-feather-pointed"></i> O Conceito
+          </div>
+          
+          <h2 class="font-psy font-black text-3xl sm:text-4xl text-white leading-tight">
+            MEMENTO VIVERE: <br>
+            <span class="text-trance-neonCyan">"LEMBRE-SE DE VIVER"</span>
+          </h2>
+
+          <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+            <strong>Memento Vivere</strong> é uma expressão em latim que significa <em>"lembre-se de viver"</em>. Ela surge como um contraponto direto e complementar ao clássico <em>Memento Mori</em> ("lembre-se de que você vai morrer"). Se a consciência da finitude nos alerta sobre o tempo que se esgota, o Memento Vivere é o chamado urgente para não apenas existir ou sobreviver, mas celebrar e experimentar cada instante com presença e intenção.
+          </p>
+
+          <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+            E nada materializa essa ideia com tanta força quanto a <strong>Fênix</strong>: o símbolo definitivo do renascimento, da transformação, da intensidade e da celebração da vida. Trazer esse princípio para a folia é transformar a pista em um espaço de renovação coletiva, onde cada batida convida a renascer em festa.
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <i class="fa-solid fa-peace text-trance-neonCyan text-xl mb-1"></i>
+              <div class="font-psy font-bold text-xs text-white">PAZ</div>
+              <div class="text-[10px] text-gray-400">Harmonia na avenida</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <i class="fa-solid fa-heart text-trance-neonPink text-xl mb-1"></i>
+              <div class="font-psy font-bold text-xs text-white">AMOR</div>
+              <div class="text-[10px] text-gray-400">Liberdade de ser</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <i class="fa-solid fa-handshake-angle text-trance-solarGold text-xl mb-1"></i>
+              <div class="font-psy font-bold text-xs text-white">UNIÃO</div>
+              <div class="text-[10px] text-gray-400">Cultura independente</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <i class="fa-solid fa-shield-cat text-trance-neonGreen text-xl mb-1"></i>
+              <div class="font-psy font-bold text-xs text-white">RESPEITO</div>
+              <div class="text-[10px] text-gray-400">Não é não & Diversidade</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. SEÇÃO CIRCUITO OFICIAL -->
+    <section id="trajeto" class="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div class="bg-gradient-to-br from-trance-card to-purple-950/40 rounded-3xl border border-white/15 p-8 sm:p-14 shadow-2xl relative overflow-hidden text-center space-y-6">
+        <div class="relative z-10 space-y-4 max-w-2xl mx-auto">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-trance-neonCyan/15 border border-trance-neonCyan/40 text-trance-neonCyan font-psy font-bold text-xs uppercase tracking-wider">
+            <i class="fa-solid fa-map-location-dot animate-pulse"></i>
+            <span>Circuito Oficial</span>
+          </div>
+
+          <h2 class="font-psy font-black text-3xl sm:text-5xl text-white">
+            CIRCUITO <span class="text-trance-neonCyan">OFICIAL</span>
+          </h2>
+
+          <div class="py-6">
+            <div class="inline-block px-8 py-5 rounded-2xl bg-white/5 border border-purple-500/30 backdrop-blur-md shadow-xl">
+              <span class="font-psy font-black text-2xl sm:text-4xl text-trance-solarGold tracking-widest uppercase block animate-pulse">
+                EM BREVE
+              </span>
+              <p class="text-xs sm:text-sm text-gray-300 mt-2 font-mono">
+                O trajeto completo e os pontos de concentração serão divulgados em breve!
+              </p>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-gray-400 font-light">
+            Acompanhe nossas redes sociais oficiais para conferir em primeira mão o percurso oficial na avenida.
+          </p>
+
+          <div class="pt-2">
+            <a href="https://instagram.com/progfolia" target="_blank" rel="noopener noreferrer" 
+               class="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border border-pink-500/40 bg-pink-500/10 text-pink-300 hover:bg-pink-500 hover:text-white transition-all text-xs font-bold uppercase tracking-wider">
+              <i class="fa-brands fa-instagram text-base"></i>
+              <span>Fique de olho no @progfolia</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. SEÇÃO LINE-UP & ATRAÇÕES -->
+    <section id="lineup" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <span class="text-xs uppercase font-psy font-bold tracking-[0.25em] text-trance-neonPink">Frequências Sonoras</span>
+        <h2 class="font-psy font-black text-3xl sm:text-5xl text-white">
+          LINE-UP <span class="text-trance-neonCyan">2027</span>
+        </h2>
+        
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-trance-neonPink/15 border border-trance-neonPink/40 text-trance-neonPink font-psy font-bold text-xs uppercase tracking-wider">
+          <i class="fa-solid fa-compact-disc animate-spin"></i>
+          Grade Oficial em Breve no Instagram
+        </div>
+
+        <p class="text-gray-400 text-sm sm:text-base pt-2">
+          Estamos selecionando a dedo os nomes do Psytrance regional e nacional para comandar o trio em 2027!
+        </p>
+      </div>
+
+      <div class="max-w-2xl mx-auto py-6">
+        <div class="p-8 sm:p-12 rounded-3xl bg-white/5 border border-purple-500/30 backdrop-blur-md shadow-2xl text-center space-y-3">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-trance-neonPink/15 border border-trance-neonPink/40 flex items-center justify-center text-trance-neonPink text-3xl shadow-lg">
+            <i class="fa-solid fa-compact-disc animate-spin"></i>
+          </div>
+          <h3 class="font-psy font-black text-2xl sm:text-4xl text-trance-solarGold tracking-widest uppercase animate-pulse">
+            ATRAÇÕES EM BREVE
+          </h3>
+          <p class="text-xs sm:text-sm text-gray-300 font-mono">
+            Os projetos e DJs oficiais que comandarão as frequências na avenida serão revelados em breve!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO SPOTIFY COLABORATIVA -->
+    <section id="playlist" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="relative bg-gradient-to-br from-green-950/40 via-trance-dark to-purple-950/60 rounded-3xl border-2 border-green-500/40 p-6 sm:p-10 lg:p-12 shadow-2xl overflow-hidden">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+          <div class="lg:col-span-7 space-y-6">
+            <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-green-500/15 border border-green-500/40 text-green-400 font-psy font-bold text-xs uppercase tracking-wider">
+              <i class="fa-brands fa-spotify text-base animate-pulse"></i>
+              <span>Playlist Colaborativa Oficial</span>
+            </div>
+
+            <div class="space-y-2">
+              <h2 class="font-psy font-black text-3xl sm:text-5xl text-white leading-tight">
+                PLAYLIST COLABORATIVA DOS <span class="text-green-400">FOLIÕES</span>
+              </h2>
+              <p class="font-syne text-xs sm:text-sm uppercase tracking-[0.2em] text-trance-solarGold font-semibold">
+                Interação & Conexão • Compartilhe suas tracks com a galera
+              </p>
+            </div>
+
+            <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+              Queremos conectar a comunidade do Trance capixaba antes mesmo do bloco ir para a rua! Criamos essa <strong>playlist aberta no Spotify exclusivamente para interação com o público</strong>.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <a id="btnSpotifyCollab" href="https://open.spotify.com/playlist/50JIH1pE0ujzoXbOA99UwH?si=4tuOhwZpRiWYLuOS5MiPCw" target="_blank" rel="noopener noreferrer" 
+                 class="py-4 px-8 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-psy font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-xl hover:scale-105 active:scale-95 transition-all">
+                <i class="fa-brands fa-spotify text-2xl text-black"></i>
+                <span>ACESSAR PLAYLIST NO SPOTIFY</span>
+              </a>
+
+              <button onclick="copySpotifyLink()" 
+                      class="py-4 px-6 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-psy font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
+                <i class="fa-regular fa-copy text-green-400"></i>
+                <span>Copiar Link</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 flex flex-col items-center justify-center">
+            <div class="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-green-500/40 bg-black/80 p-2 glow-cyan">
+              <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/50JIH1pE0ujzoXbOA99UwH?utm_source=generator&si=d0308b0e18874d00" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 8. SEÇÃO VENDA DE ABADÁS -->
+    <section id="abadas" class="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-14 space-y-3">
+        <h2 id="abadaSectionTitle" class="font-psy font-black text-3xl sm:text-5xl text-white">
+          ABADÁ OFICIAL • <span class="text-trance-solarGold">PRÉ-VENDA</span>
+        </h2>
+        <p id="abadaSectionSubtitle" class="text-gray-300 text-sm sm:text-base">
+          Garanta já o seu abadá oficial com valor promocional exclusivo de lançamento!
+        </p>
+      </div>
+
+      <div class="bg-gradient-to-b from-trance-card to-purple-950/50 rounded-3xl border-2 border-trance-neonPink/50 p-6 sm:p-10 shadow-2xl relative glow-pink">
+        
+        <div id="lotBadgeDisplay" class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-trance-neonPink to-trance-solarGold text-trance-black font-psy font-black text-[11px] uppercase tracking-wider shadow-lg">
+          ⚡ 1º LOTE DE PRÉ-VENDA (ESTOQUE LIMITADO)
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-2">
+          
+          <div class="lg:col-span-5 flex flex-col items-center">
+            <div class="relative w-full max-w-sm rounded-2xl bg-trance-black/80 border border-purple-500/30 flex flex-col items-center p-6 shadow-inner group">
+              <div class="w-32 h-36 bg-gradient-to-b from-trance-neonPink via-purple-700 to-trance-neonCyan rounded-2xl flex flex-col items-center justify-center shadow-2xl relative p-3 shrink-0">
+                <span class="font-psy font-black text-xs text-white tracking-widest text-center">PROG FOLIA</span>
+                <span class="text-[9px] font-syne text-trance-solarGold font-bold mt-1">MEMENTO VIVERE</span>
+                <i class="fa-solid fa-atom text-white/90 text-2xl mt-2 animate-spin-slow"></i>
+                <span class="text-[8px] text-white/80 uppercase font-mono mt-2">Vitória 2027</span>
+              </div>
+
+              <div class="mt-5 space-y-3 text-left w-full">
+                <div class="text-center">
+                  <h4 class="font-psy font-bold text-base text-white">Abadá Prog Folia 2027</h4>
+                </div>
+                <p class="text-xs text-gray-200 leading-relaxed font-medium">
+                  Com nosso abadá em Dry Fit, curtir o bloco ficou ainda mais leve! 💥
+                </p>
+                <ul class="space-y-2 text-[11px] text-gray-300">
+                  <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-droplet-slash text-trance-neonCyan mt-0.5 text-xs shrink-0"></i>
+                    <span><strong>Respirabilidade máxima:</strong> evaporação rápida do suor.</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-feather text-trance-neonPink mt-0.5 text-xs shrink-0"></i>
+                    <span><strong>Toque leve e macio:</strong> zero sensação de tecido pesado.</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-wind text-trance-solarGold mt-0.5 text-xs shrink-0"></i>
+                    <span><strong>Secagem ultrarrápida:</strong> pronto para a folia.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-6">
+            <div class="flex items-baseline justify-between pb-4 border-b border-white/10">
+              <div>
+                <span class="text-xs text-gray-400 uppercase font-psy" id="lotLabelDisplay">VALOR PRÉ-VENDA:</span>
+                <div class="flex items-baseline gap-1 mt-0.5">
+                  <span class="text-sm font-bold text-gray-400">R$</span>
+                  <span class="font-psy font-black text-4xl text-trance-solarGold" id="currentPriceDisplay">45</span>
+                  <span class="text-xs text-gray-400">,00</span>
+                </div>
+              </div>
+
+              <div id="adminLotInfoContainer" class="hidden text-right">
+                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-[9px] text-purple-300 font-mono mb-1">
+                  <i class="fa-solid fa-user-shield text-[9px]"></i> <span>Admin Ativo</span>
+                </div>
+                <span class="text-xs text-trance-neonCyan font-bold uppercase tracking-wider block" id="nextLotTitleDisplay">PRÓXIMO LOTE</span>
+                <span class="text-xs text-gray-400 font-mono" id="nextLotInfoDisplay">2º Lote: R$ 55,00 (após 50 vendas)</span>
+              </div>
+
+              <div id="publicLotBadgeContainer" class="text-right">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-trance-neonCyan/10 border border-trance-neonCyan/30 text-trance-neonCyan text-[11px] font-bold uppercase tracking-wider font-psy">
+                  <span class="w-1.5 h-1.5 rounded-full bg-trance-neonPink animate-ping"></span>
+                  Lote Promocional
+                </span>
+                <span class="block text-[11px] text-gray-400 mt-1">Virada sujeita a disponibilidade</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-psy font-bold text-gray-200 uppercase tracking-wider">
+                  Selecione o Tamanho:
+                </label>
+              </div>
+
+              <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="sizeButtonsContainer">
+                <button type="button" onclick="selectSize('PP')" class="size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all" data-size="PP"><span class="block font-psy font-black text-sm text-white">PP</span></button>
+                <button type="button" onclick="selectSize('P')" class="size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all" data-size="P"><span class="block font-psy font-black text-sm text-white">P</span></button>
+                <button type="button" onclick="selectSize('M')" class="size-btn py-3 px-2 rounded-xl border border-trance-neonPink bg-trance-neonPink text-center transition-all active-size" data-size="M"><span class="block font-psy font-black text-sm text-white">M</span></button>
+                <button type="button" onclick="selectSize('G')" class="size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all" data-size="G"><span class="block font-psy font-black text-sm text-white">G</span></button>
+                <button type="button" onclick="selectSize('GG')" class="size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all" data-size="GG"><span class="block font-psy font-black text-sm text-white">GG</span></button>
+                <button type="button" onclick="selectSize('G1')" class="size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all" data-size="G1"><span class="block font-psy font-black text-sm text-white">G1</span></button>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="customSizeCheck" onchange="toggleCustomSize(this)" class="w-4 h-4 accent-trance-neonPink rounded cursor-pointer">
+                <span class="text-xs sm:text-sm font-bold text-white">
+                  Preciso de outro tamanho sob encomenda (+ R$ 10,00)
+                </span>
+              </label>
+
+              <div id="customSizeField" class="hidden pl-6 pt-1">
+                <input type="text" id="customSizeInput" placeholder="Especifique seu tamanho (Ex: G2, G3, Infantil 12, etc.)" 
+                       class="w-full px-4 py-2.5 rounded-xl bg-trance-black border border-trance-neonPink/60 text-white text-xs placeholder-gray-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10">
+              <div>
+                <span class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-200">Quantidade:</span>
+                <span class="text-[10px] text-gray-400" id="qtyStockHint">Selecione quantas unidades deseja</span>
+              </div>
+              
+              <div class="flex items-center gap-2 bg-trance-black/60 p-1 rounded-xl border border-white/10">
+                <button type="button" onclick="changeQty(-1)" aria-label="Diminuir quantidade" 
+                        class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/15 text-white flex items-center justify-center font-bold active:scale-90 transition-all">
+                  <i class="fa-solid fa-minus text-xs"></i>
+                </button>
+                <span id="currentQtyDisplay" class="font-psy font-black text-lg text-white w-9 text-center">1</span>
+                <button type="button" onclick="changeQty(1)" aria-label="Aumentar quantidade" 
+                        class="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/15 text-white flex items-center justify-center font-bold active:scale-90 transition-all">
+                  <i class="fa-solid fa-plus text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="pt-2 space-y-3">
+              <div class="flex items-center justify-between text-xs text-gray-300">
+                <span>Seleção Atual: <strong class="text-trance-neonCyan" id="summarySizeDisplay">M (1x)</strong></span>
+                <span>Subtotal Deste Item: <strong class="text-trance-solarGold font-psy text-base" id="summaryTotalDisplay">R$ 45,00</strong></span>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-2.5">
+                <button onclick="addItemToCart()" 
+                        class="flex-1 py-4 rounded-2xl font-psy font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-trance-neonPink via-trance-uvPurple to-trance-neonCyan text-white shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 glow-pink">
+                  <i class="fa-solid fa-cart-plus text-sm"></i>
+                  <span>ADICIONAR AO CARRINHO</span>
+                </button>
+
+                <button onclick="toggleCartDrawer(true)" 
+                        class="py-4 px-5 rounded-2xl font-psy font-bold text-xs uppercase tracking-wider bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-cart-shopping text-trance-neonCyan"></i>
+                  <span>VER CARRINHO (<span id="btnCartCount">0</span>)</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 9. SEÇÃO SORTEIO 'MEMENTO VIVERE' -->
+    <section id="sorteio" class="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div class="relative bg-gradient-to-br from-purple-950/60 via-trance-card to-trance-black rounded-3xl border-2 border-trance-solarGold/50 p-8 sm:p-12 backdrop-blur-xl shadow-2xl overflow-hidden glow-purple">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-6 space-y-4">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-trance-solarGold/20 text-trance-solarGold font-psy font-bold text-xs uppercase tracking-wider border border-trance-solarGold/30">
+              <i class="fa-solid fa-gift"></i> Promoção Memento Vivere
+            </span>
+            <h2 class="font-psy font-black text-3xl sm:text-4xl text-white leading-tight">
+              CADASTRE-SE NO <span class="text-trance-solarGold">SORTEIO OFICIAL</span>
+            </h2>
+            <p class="text-gray-300 text-sm leading-relaxed">
+              O prêmio e a data de apuração serão divulgados em breve no nosso Instagram. Antecipe seu cadastro para receber o seu <strong>Número da Sorte Cósmico</strong>!
+            </p>
+          </div>
+
+          <div class="lg:col-span-6">
+            <div class="bg-trance-black/80 rounded-2xl p-6 sm:p-8 border border-white/15 shadow-xl">
+              <form id="sorteioForm" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1.5">Seu Nome Completo:</label>
+                  <input type="text" id="sorteioNome" required placeholder="Como no seu documento" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-trance-solarGold text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1.5">WhatsApp (com DDD):</label>
+                  <input type="tel" id="sorteioWhatsapp" required placeholder="(27) 99999-9999" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-trance-solarGold text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-psy font-bold uppercase tracking-wider text-gray-300 mb-1.5">Seu @ do Instagram:</label>
+                  <input type="text" id="sorteioInstagram" required placeholder="@seuperfil" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-trance-solarGold text-sm">
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-trance-solarGold via-trance-neonPink to-trance-neonCyan text-trance-black font-psy font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-ticket"></i>
+                  <span>CADASTRAR E GERAR NÚMERO DA SORTE</span>
+                </button>
+              </form>
+
+              <div id="sorteioResult" class="hidden text-center space-y-4 py-3">
+                <div class="w-14 h-14 mx-auto rounded-full bg-trance-solarGold/20 text-trance-solarGold flex items-center justify-center text-2xl">🌀</div>
+                <h4 class="font-psy font-bold text-xl text-white">Inscrição Confirmada!</h4>
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-purple-900/40 via-trance-dark to-pink-900/40 border-2 border-dashed border-trance-solarGold/70">
+                  <span class="text-[10px] uppercase font-psy font-bold tracking-widest text-trance-neonCyan">Cupom Oficial</span>
+                  <div id="luckyNumberDisplay" class="font-psy font-black text-2xl sm:text-3xl text-trance-solarGold tracking-widest my-2">#PROG-FOLIA-777</div>
+                  <div class="text-xs text-gray-300" id="luckyParticipantName">Nome do Folião</div>
+                </div>
+                <button onclick="resetSorteioForm()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs">Novo Cadastro</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 10. SEÇÃO CONTRIBUIÇÃO VOLUNTÁRIA / CHAVE PIX -->
+    <section id="apoio" class="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div class="bg-trance-card rounded-3xl border border-purple-500/30 p-8 sm:p-12 shadow-2xl relative">
+        <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
+          <h2 class="font-psy font-black text-3xl sm:text-4xl text-white">
+            CONTRIBUIÇÃO VOLUNTÁRIA
+          </h2>
+          <p class="text-gray-300 text-sm leading-relaxed">
+            Você que mora longe, em outro estado, outro país, ou até em outra dimensão e não vai conseguir no nosso bloco e quer nos ajudar a crescer? Sua doação junto com as vendas dos abadás nos ajudam a custear o bloco seja comprando uma água pra equipe ou ajudando no cachê do artista, toda ajuda é bem vinda! 🩵
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center max-w-3xl mx-auto">
+          <div class="md:col-span-5 flex flex-col items-center text-center">
+            <div class="p-4 rounded-2xl bg-white shadow-2xl">
+              <svg class="w-40 h-40" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="40" height="40" rx="4" fill="#07040d"/>
+                <rect x="18" y="18" width="24" height="24" rx="2" fill="white"/>
+                <rect x="24" y="24" width="12" height="12" fill="#8A2BE2"/>
+                <rect x="110" y="10" width="40" height="40" rx="4" fill="#07040d"/>
+                <rect x="118" y="18" width="24" height="24" rx="2" fill="white"/>
+                <rect x="124" y="24" width="12" height="12" fill="#00F5D4"/>
+                <rect x="10" y="110" width="40" height="40" rx="4" fill="#07040d"/>
+                <rect x="18" y="118" width="24" height="24" rx="2" fill="white"/>
+                <rect x="24" y="124" width="12" height="12" fill="#FF007F"/>
+                <rect x="65" y="65" width="30" height="30" rx="8" fill="#FF007F"/>
+                <text x="80" y="85" font-size="14" text-anchor="middle" fill="white">🕉️</text>
+              </svg>
+            </div>
+            <span class="text-xs text-gray-400 mt-2 font-mono">Chave Pix de Apoio Oficial</span>
+          </div>
+
+          <div class="md:col-span-7 space-y-4">
+            <div>
+              <label class="block text-xs font-psy font-bold text-gray-300 uppercase mb-1.5">
+                Chave PIX:
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="pixKeyInput" readonly value="pix@progfolia.com.br" 
+                       class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 text-trance-solarGold font-mono text-xs sm:text-sm select-all">
+                <button onclick="copyPixKey()" id="btnCopyPix" 
+                        class="px-5 py-3 rounded-xl bg-trance-neonCyan hover:bg-trance-neonCyan/90 text-trance-black font-psy font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 shrink-0">
+                  <i class="fa-regular fa-copy"></i>
+                  <span>Copiar</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 space-y-1.5 font-mono">
+              <div><strong>Titular:</strong> <span id="pixTitularDisplay" class="text-trance-neonCyan">Coletivo Prog Folia ES</span></div>
+              <div><strong>Finalidade:</strong> Ajuda nas finanças do bloco, contratação de profissionais, insumos para o cortejo e afins.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 11. CENTRAL DO FOLIÃO / FAQ FLUTUANTE -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <div id="faqPopup" class="hidden mb-4 w-80 sm:w-88 rounded-2xl bg-trance-dark/95 border border-purple-500/40 shadow-2xl p-4 backdrop-blur-2xl transition-all duration-300">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-trance-neonCyan animate-ping"></span>
+          <span class="font-psy font-bold text-xs text-white uppercase tracking-wider">Central do Folião Psy</span>
+        </div>
+        <button onclick="toggleFaqPopup()" class="text-gray-400 hover:text-white text-sm">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="py-3 space-y-2">
+        <button onclick="faqAnswer('gratuito')" class="w-full text-left p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-gray-200 transition-colors flex items-center justify-between">
+          <span>🔊 O bloco na rua é gratuito?</span>
+          <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+        </button>
+        <button onclick="faqAnswer('abada')" class="w-full text-left p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-gray-200 transition-colors flex items-center justify-between">
+          <span>👕 O abadá é obrigatório?</span>
+          <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+        </button>
+      </div>
+
+      <a id="btnFaqWhatsApp" href="#" target="_blank" rel="noopener noreferrer" 
+         class="w-full py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-psy font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-colors">
+        <i class="fa-brands fa-whatsapp text-base"></i> Chamar no WhatsApp
+      </a>
+    </div>
+
+    <button onclick="toggleFaqPopup()" id="btnFloatWa" aria-label="Tirar Dúvidas" 
+            class="group relative flex items-center gap-3 px-4 py-3.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-2xl hover:scale-105 active:scale-95 transition-all glow-cyan">
+      <i class="fa-brands fa-whatsapp text-2xl animate-pulse"></i>
+      <span class="font-psy font-bold text-xs hidden sm:inline uppercase tracking-wider">Dúvidas?</span>
+      <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-trance-neonPink border-2 border-trance-black"></span>
+    </button>
+  </div>
+
+  <!-- 12. RODAPÉ COMPLETO -->
+  <footer class="bg-black/95 border-t border-purple-500/20 text-gray-400 py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="space-y-4 md:col-span-1">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-trance-neonPink flex items-center justify-center text-white text-sm">
+              <i class="fa-solid fa-atom"></i>
+            </div>
+            <span class="font-psy font-black text-lg text-white">PROG FOLIA</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            O primeiro bloco de Psytrance do Espírito Santo.<br>
+            Edição 2027 - Memento Vivere.
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-psy font-bold text-white text-xs uppercase tracking-wider">Circuito</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#trajeto" class="hover:text-trance-neonCyan transition-colors">Trajeto em 2027 Vitória - ES</a></li>
+            <li><a href="#abadas" class="hover:text-trance-neonCyan transition-colors">Pré-Venda de Abadás</a></li>
+            <li><a href="#sorteio" class="hover:text-trance-neonCyan transition-colors">Sorteio Memento Vivere</a></li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-psy font-bold text-white text-xs uppercase tracking-wider">Pilares</h4>
+          <p class="text-xs text-gray-300">Paz, Amor, União e Respeito na folia de rua de Vitória.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-psy font-bold text-white text-xs uppercase tracking-wider">Contato</h4>
+          <p class="text-xs text-trance-neonCyan font-mono">@progfolia</p>
+          <button onclick="openAdminModal()" class="text-gray-500 hover:text-trance-neonCyan transition-colors flex items-center gap-1.5 text-xs pt-2">
+            <i class="fa-solid fa-lock text-[10px]"></i> <span>Área do Admin</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE ADMINISTRAÇÃO -->
+  <!-- ========================================================================= -->
+  <div id="adminModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="relative w-full max-w-md bg-trance-dark border border-purple-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <h3 class="font-psy font-bold text-sm text-white uppercase tracking-wider">Painel do Organizador</h3>
+        <button onclick="closeAdminModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="adminLoginForm" class="space-y-4">
+        <input type="password" id="adminPinInput" maxlength="8" placeholder="Digite o PIN (padrão: 2027)" 
+               class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/20 text-white font-mono text-center tracking-widest text-lg focus:outline-none focus:border-trance-neonCyan">
+        <button onclick="handleAdminLogin()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-trance-neonPink to-trance-uvPurple text-white font-psy font-bold text-xs uppercase tracking-wider">
+          Acessar Dados Confidenciais
+        </button>
+      </div>
+
+      <div id="adminDashboard" class="hidden space-y-4">
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2 font-mono text-xs">
+          <div class="flex justify-between">
+            <span>Vendas Registradas:</span>
+            <strong id="adminSalesCountDisplay" class="text-trance-neonCyan">0 un.</strong>
+          </div>
+          <div class="flex justify-between">
+            <span>Lote Atual:</span>
+            <strong id="adminCurrentLotDisplay" class="text-trance-solarGold">1º Lote (R$ 45)</strong>
+          </div>
+        </div>
+        <button onclick="handleAdminLogout()" class="w-full py-2.5 rounded-xl bg-white/10 text-gray-300 text-xs font-semibold">
+          Encerrar Sessão
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT: ENGINE DE ÁUDIO, ESTOQUE & CHECKOUT DINÂMICO VIA MERCADO PAGO -->
+  <!-- ========================================================================= -->
   <script>
-    // Objeto do carrinho garantido e blindado contra valor zero
-    let carrinho = {
-      titulo: 'Abadá Prog Folia - Teste de Validação',
-      precoUnitario: 1.00,
-      quantidade: 1
+    const CONFIG = {
+      ADMIN_PIN: "2027",
+      CUSTOM_SIZE_FEE: 10,
+      ORGANIZER_WHATSAPP: "5527999999999",
+      SPOTIFY_PLAYLIST_URL: "https://open.spotify.com/playlist/50JIH1pE0ujzoXbOA99UwH?si=4tuOhwZpRiWYLuOS5MiPCw",
+      PIX_KEY: "pix@progfolia.com.br",
+      PIX_TITULAR: "Coletivo Prog Folia ES",
+      WHATSAPP_NUMBER: "5527999999999",
+      TRACK_NAME: "Prog Folia by Zeppy",
+      
+      // ENDPOINT DA API SERVERLESS (Cloudflare Pages Function para Mercado Pago)
+      API_CHECKOUT_ENDPOINT: "/api/create-preference",
+
+      LOTS: [
+        {
+          id: 1,
+          minSales: 0,
+          maxSales: 49,
+          price: 45,
+          name: "Pré-Venda",
+          label: "VALOR PRÉ-VENDA:",
+          badge: "⚡ 1º LOTE DE PRÉ-VENDA (ESTOQUE LIMITADO)",
+          titleTag: "PRÉ-VENDA",
+          subtitle: "Garanta já o seu abadá oficial com valor promocional exclusivo de lançamento!",
+          nextText: "2º Lote: R$ 55,00 (após 50 vendas)"
+        },
+        {
+          id: 2,
+          minSales: 50,
+          maxSales: 99,
+          price: 55,
+          name: "2º Lote",
+          label: "VALOR 2º LOTE:",
+          badge: "🔥 2º LOTE OFICIAL",
+          titleTag: "2º LOTE",
+          subtitle: "Garanta aqui o seu abadá oficial",
+          nextText: "3º Lote: R$ 65,00 (após 100 vendas)"
+        },
+        {
+          id: 3,
+          minSales: 100,
+          maxSales: Infinity,
+          price: 65,
+          name: "3º Lote",
+          label: "VALOR 3º LOTE:",
+          badge: "🚀 3º LOTE FINAL",
+          titleTag: "3º LOTE",
+          subtitle: "Garanta aqui o seu abadá oficial",
+          nextText: "Último lote disponível!"
+        }
+      ]
     };
 
-    function selecionarItem(titulo, preco) {
-      carrinho.titulo = titulo;
-      carrinho.precoUnitario = parseFloat(preco);
-      carrinho.quantidade = 1; // Garante sempre que o carrinho tem no mínimo 1 item
-
-      atualizarInterfaceModal();
-      document.getElementById('errorBox').style.display = 'none';
-      document.getElementById('modalCheckout').classList.add('active');
+    function getTotalSalesCount() {
+      const stored = localStorage.getItem('progfolia_total_sales_2027');
+      return stored !== null ? parseInt(stored, 10) : 0;
     }
 
-    function alterarQtd(delta) {
-      const novaQtd = carrinho.quantidade + delta;
-      if (novaQtd >= 1 && novaQtd <= 10) {
-        carrinho.quantidade = novaQtd;
-        atualizarInterfaceModal();
+    function getCurrentLot() {
+      const totalSales = getTotalSalesCount();
+      for (const lot of CONFIG.LOTS) {
+        if (totalSales >= lot.minSales && totalSales <= lot.maxSales) {
+          return lot;
+        }
+      }
+      return CONFIG.LOTS[CONFIG.LOTS.length - 1];
+    }
+
+    function enterExperience(withAudio) {
+      const splash = document.getElementById('splashScreen');
+      if (splash) {
+        splash.classList.add('splash-exit');
+        setTimeout(() => {
+          splash.style.display = 'none';
+        }, 850);
+      }
+
+      if (withAudio) {
+        playAudio();
       }
     }
 
-    function atualizarInterfaceModal() {
-      const total = carrinho.precoUnitario * carrinho.quantidade;
-      document.getElementById('qtyText').innerText = carrinho.quantidade;
-      document.getElementById('modalTitle').innerText = carrinho.titulo;
-      document.getElementById('modalSubtitle').innerText = `Total: R$ ${total.toFixed(2).replace('.', ',')} (${carrinho.quantidade}x)`;
+    // =========================================================================
+    // ADMIN
+    // =========================================================================
+    let isAdminLoggedIn = localStorage.getItem('progfolia_admin_logged_in') === 'true';
 
-      const btnSubmit = document.getElementById('btnSubmit');
-      if (carrinho.precoUnitario === 1.00) {
-        btnSubmit.className = 'btn-buy btn-buy-test';
-        btnSubmit.innerText = `Pagar Teste (R$ ${total.toFixed(2).replace('.', ',')})`;
+    function openAdminModal() {
+      const modal = document.getElementById('adminModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      if (isAdminLoggedIn) {
+        showAdminDashboard();
       } else {
-        btnSubmit.className = 'btn-buy';
-        btnSubmit.innerText = `Pagar com Mercado Pago (R$ ${total.toFixed(2).replace('.', ',')})`;
+        document.getElementById('adminLoginForm').classList.remove('hidden');
+        document.getElementById('adminDashboard').classList.add('hidden');
       }
     }
 
-    function fecharModal() {
-      document.getElementById('modalCheckout').classList.remove('active');
+    function closeAdminModal() {
+      const modal = document.getElementById('adminModal');
+      if (modal) modal.classList.add('hidden');
     }
 
-    async function enviarPedido(event) {
-      event.preventDefault();
+    function handleAdminLogin() {
+      const pin = document.getElementById('adminPinInput').value.trim();
+      if (pin === CONFIG.ADMIN_PIN) {
+        isAdminLoggedIn = true;
+        localStorage.setItem('progfolia_admin_logged_in', 'true');
+        showAdminDashboard();
+        updateAdminVisibility();
+        showToast("Admin Autenticado", "Acesso liberado às informações confidenciais.");
+      } else {
+        showToast("PIN Incorreto", "A senha digitada está inválida.", false);
+      }
+    }
 
-      const btnSubmit = document.getElementById('btnSubmit');
-      const errorBox = document.getElementById('errorBox');
-      errorBox.style.display = 'none';
+    function handleAdminLogout() {
+      isAdminLoggedIn = false;
+      localStorage.removeItem('progfolia_admin_logged_in');
+      document.getElementById('adminLoginForm').classList.remove('hidden');
+      document.getElementById('adminDashboard').classList.add('hidden');
+      updateAdminVisibility();
+      showToast("Sessão Encerrada", "Você saiu da área de administração.");
+    }
 
-      // Validação do carrinho
-      if (!carrinho || carrinho.quantidade < 1) {
-        errorBox.innerText = 'Selecione pelo menos 1 unidade antes de prosseguir.';
-        errorBox.style.display = 'block';
+    function showAdminDashboard() {
+      document.getElementById('adminLoginForm').classList.add('hidden');
+      document.getElementById('adminDashboard').classList.remove('hidden');
+      const totalSales = getTotalSalesCount();
+      const currentLot = getCurrentLot();
+      document.getElementById('adminSalesCountDisplay').innerText = `${totalSales} un.`;
+      document.getElementById('adminCurrentLotDisplay').innerText = `${currentLot.name} (R$ ${currentLot.price.toFixed(0)})`;
+    }
+
+    function updateAdminVisibility() {
+      const adminContainer = document.getElementById('adminLotInfoContainer');
+      const publicContainer = document.getElementById('publicLotBadgeContainer');
+
+      if (isAdminLoggedIn) {
+        if (adminContainer) adminContainer.classList.remove('hidden');
+        if (publicContainer) publicContainer.classList.add('hidden');
+      } else {
+        if (adminContainer) adminContainer.classList.add('hidden');
+        if (publicContainer) publicContainer.classList.remove('hidden');
+      }
+    }
+
+    // =========================================================================
+    // ENGINE DE ÁUDIO
+    // =========================================================================
+    let isPlaying = false;
+    let isMuted = false;
+
+    function setAudioStatus(text) {
+      const el = document.getElementById('audioStatusText');
+      if (el) el.innerText = text;
+    }
+
+    function playAudio() {
+      const audioElement = document.getElementById('bgAudio');
+      if (!audioElement) return;
+
+      setAudioStatus("Carregando...");
+      const playPromise = audioElement.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          isPlaying = true;
+          updateAudioUI(true);
+          setAudioStatus("No ar");
+        }).catch(() => {
+          isPlaying = false;
+          updateAudioUI(false);
+          setAudioStatus("Aguardando");
+        });
+      }
+    }
+
+    function pauseAudio() {
+      const audioElement = document.getElementById('bgAudio');
+      if (audioElement && !audioElement.paused) {
+        audioElement.pause();
+      }
+      isPlaying = false;
+      updateAudioUI(false);
+      setAudioStatus("Pausado");
+    }
+
+    function toggleAudioPlayback() {
+      const audioElement = document.getElementById('bgAudio');
+      if (!audioElement) return;
+      if (!audioElement.paused) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
+    }
+
+    function toggleAudioMute() {
+      isMuted = !isMuted;
+      const audioElement = document.getElementById('bgAudio');
+      if (audioElement) audioElement.muted = isMuted;
+      const muteIcon = document.getElementById('audioMuteIcon');
+      if (muteIcon) {
+        muteIcon.className = isMuted ? "fa-solid fa-volume-xmark text-red-400" : "fa-solid fa-volume-high text-gray-400";
+      }
+    }
+
+    function updateAudioUI(playing) {
+      const playIcon = document.getElementById('audioPlayIcon');
+      if (playIcon) {
+        playIcon.className = playing ? "fa-solid fa-pause text-sm" : "fa-solid fa-play text-sm";
+      }
+
+      const eqBars = document.querySelectorAll('#equalizerContainer span');
+      eqBars.forEach((bar, idx) => {
+        if (playing) {
+          bar.classList.add('animate-equalizer');
+          bar.style.animationDelay = `${idx * 0.18}s`;
+        } else {
+          bar.classList.remove('animate-equalizer');
+          bar.style.height = '4px';
+        }
+      });
+    }
+
+    // =========================================================================
+    // ESTOQUE & CARRINHO DE COMPRAS
+    // =========================================================================
+    let cart = JSON.parse(localStorage.getItem('progfolia_cart_2027')) || [];
+    let selectedSize = 'M';
+    let isCustomSize = false;
+    let selectedQty = 1;
+
+    function renderStockBadges() {
+      document.getElementById('currentQtyDisplay').innerText = selectedQty;
+      updatePriceDisplay();
+    }
+
+    function selectSize(size) {
+      if (isCustomSize) {
+        document.getElementById('customSizeCheck').checked = false;
+        document.getElementById('customSizeField').classList.add('hidden');
+        isCustomSize = false;
+      }
+      selectedSize = size;
+      selectedQty = 1;
+
+      document.querySelectorAll('.size-btn').forEach(btn => {
+        if (btn.getAttribute('data-size') === size) {
+          btn.className = "size-btn py-3 px-2 rounded-xl border border-trance-neonPink bg-trance-neonPink text-center transition-all active-size";
+        } else {
+          btn.className = "size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all";
+        }
+      });
+
+      renderStockBadges();
+    }
+
+    function toggleCustomSize(checkbox) {
+      isCustomSize = checkbox.checked;
+      selectedQty = 1;
+      const customField = document.getElementById('customSizeField');
+
+      if (isCustomSize) {
+        customField.classList.remove('hidden');
+        document.getElementById('customSizeInput').focus();
+        document.querySelectorAll('.size-btn').forEach(btn => {
+          btn.className = "size-btn py-3 px-2 rounded-xl border border-white/15 bg-white/5 hover:border-trance-neonPink text-center transition-all opacity-60";
+        });
+      } else {
+        customField.classList.add('hidden');
+        selectSize(selectedSize);
+      }
+
+      renderStockBadges();
+    }
+
+    function changeQty(delta) {
+      const next = selectedQty + delta;
+      if (next < 1 || next > 99) return;
+      selectedQty = next;
+      document.getElementById('currentQtyDisplay').innerText = selectedQty;
+      updatePriceDisplay();
+    }
+
+    function updatePriceDisplay() {
+      const currentLot = getCurrentLot();
+      const unitPrice = isCustomSize ? (currentLot.price + CONFIG.CUSTOM_SIZE_FEE) : currentLot.price;
+      const totalItem = unitPrice * selectedQty;
+
+      document.getElementById('currentPriceDisplay').innerText = currentLot.price.toFixed(0);
+      document.getElementById('lotLabelDisplay').innerText = currentLot.label;
+      document.getElementById('lotBadgeDisplay').innerText = currentLot.badge;
+      document.getElementById('nextLotInfoDisplay').innerText = currentLot.nextText;
+      document.getElementById('heroAbadaPrice').innerText = `GARANTIR ABADÁ • ${currentLot.name.toUpperCase()} (R$ ${currentLot.price.toFixed(0)})`;
+
+      const sectionTitleEl = document.getElementById('abadaSectionTitle');
+      if (sectionTitleEl) {
+        sectionTitleEl.innerHTML = `ABADÁ OFICIAL • <span class="text-trance-solarGold">${currentLot.titleTag}</span>`;
+      }
+
+      document.getElementById('summaryTotalDisplay').innerText = `R$ ${totalItem.toFixed(2).replace('.', ',')}`;
+      const displaySizeName = isCustomSize ? "Sob Encomenda" : selectedSize;
+      document.getElementById('summarySizeDisplay').innerText = `${displaySizeName} (${selectedQty}x)`;
+
+      updateAdminVisibility();
+    }
+
+    function addItemToCart() {
+      let customLabel = "";
+      if (isCustomSize) {
+        customLabel = document.getElementById('customSizeInput').value.trim();
+        if (!customLabel) {
+          showToast("Atenção", "Por favor, especifique o tamanho sob encomenda desejado.", false);
+          document.getElementById('customSizeInput').focus();
+          return;
+        }
+      }
+
+      const currentLot = getCurrentLot();
+      const unitPrice = isCustomSize ? (currentLot.price + CONFIG.CUSTOM_SIZE_FEE) : currentLot.price;
+
+      const existingIndex = cart.findIndex(item => {
+        if (isCustomSize) {
+          return item.isCustom && item.customLabel.toLowerCase() === customLabel.toLowerCase();
+        }
+        return !item.isCustom && item.size === selectedSize;
+      });
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += selectedQty;
+      } else {
+        cart.push({
+          id: 'abada_' + Date.now(),
+          size: isCustomSize ? 'Sob Encomenda' : selectedSize,
+          isCustom: isCustomSize,
+          customLabel: customLabel,
+          unitPrice: unitPrice,
+          quantity: selectedQty
+        });
+      }
+
+      localStorage.setItem('progfolia_cart_2027', JSON.stringify(cart));
+
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+
+      const label = isCustomSize ? `Sob Encomenda (${customLabel})` : selectedSize;
+      showToast("Adicionado ao Carrinho!", `${selectedQty}x Abadá ${label} adicionado(s) com sucesso.`);
+
+      selectedQty = 1;
+      renderStockBadges();
+      renderCartUI();
+    }
+
+    function toggleCartDrawer(open) {
+      const drawer = document.getElementById('cartDrawer');
+      const backdrop = document.getElementById('cartBackdrop');
+
+      if (open) {
+        renderCartUI();
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100');
+        drawer.classList.remove('translate-x-full');
+      } else {
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    function renderCartUI() {
+      const listContainer = document.getElementById('cartItemsList');
+      const totalDisplay = document.getElementById('cartTotalDisplay');
+      const subtitle = document.getElementById('cartDrawerSubtitle');
+
+      const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalAmount = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+
+      document.getElementById('cartNavBadge').innerText = totalItemsCount;
+      document.getElementById('mobileCartNavBadge').innerText = totalItemsCount;
+      document.getElementById('btnCartCount').innerText = totalItemsCount;
+      document.getElementById('mobileCartMenuCount').innerText = `${totalItemsCount} un.`;
+
+      subtitle.innerText = `${totalItemsCount} item(s) selecionado(s)`;
+      totalDisplay.innerText = `R$ ${totalAmount.toFixed(2).replace('.', ',')}`;
+
+      if (cart.length === 0) {
+        listContainer.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
+            <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-3xl text-gray-400">🛒</div>
+            <div>
+              <h4 class="font-psy font-bold text-white text-sm">Seu carrinho está vazio</h4>
+              <p class="text-xs text-gray-400 mt-1">Selecione os tamanhos para montar seu pedido.</p>
+            </div>
+          </div>
+        `;
+        document.getElementById('btnCheckoutCart').classList.add('opacity-50', 'pointer-events-none');
         return;
       }
 
-      btnSubmit.disabled = true;
-      const textoOriginal = btnSubmit.innerText;
-      btnSubmit.innerText = 'A gerar pagamento...';
+      document.getElementById('btnCheckoutCart').classList.remove('opacity-50', 'pointer-events-none');
 
-      const totalCalculado = carrinho.precoUnitario * carrinho.quantidade;
+      let html = '';
+      cart.forEach((item, index) => {
+        const itemSubtotal = item.unitPrice * item.quantity;
+        const sizeTag = item.isCustom ? `Encomenda: ${item.customLabel}` : `Tamanho: ${item.size}`;
 
-      const payload = {
-        title: `${carrinho.titulo} (Tam: ${document.getElementById('buyerSize').value})`,
-        price: totalCalculado,
-        quantity: 1,
-        buyer: {
-          name: document.getElementById('buyerName').value,
-          email: document.getElementById('buyerEmail').value,
-          cpf: document.getElementById('buyerCpf').value.replace(/\D/g, ''),
-          phone: document.getElementById('buyerPhone').value.replace(/\D/g, ''),
-          size: document.getElementById('buyerSize').value
-        }
-      };
+        html += `
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 relative group">
+            <div class="w-12 h-14 rounded-xl bg-gradient-to-b from-sky-500 to-blue-600 flex items-center justify-center text-white text-lg shrink-0 shadow-md">
+              <i class="fa-solid fa-shirt"></i>
+            </div>
+            <div class="flex-1 min-w-0 pr-6">
+              <h5 class="font-psy font-bold text-xs text-white truncate">Abadá Prog Folia 2027</h5>
+              <span class="inline-block px-2 py-0.5 mt-0.5 rounded-md bg-white/10 text-trance-neonCyan font-mono text-[10px] font-bold">
+                ${sizeTag}
+              </span>
+              <div class="flex items-center justify-between mt-2">
+                <span class="text-xs font-psy font-bold text-trance-solarGold">
+                  R$ ${itemSubtotal.toFixed(2).replace('.', ',')}
+                </span>
+                <div class="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-lg border border-white/10">
+                  <button onclick="updateCartItemQty(${index}, -1)" class="w-5 h-5 text-gray-300 hover:text-white flex items-center justify-center font-bold">-</button>
+                  <span class="font-mono text-xs text-white font-bold px-1">${item.quantity}</span>
+                  <button onclick="updateCartItemQty(${index}, 1)" class="w-5 h-5 text-gray-300 hover:text-white flex items-center justify-center font-bold">+</button>
+                </div>
+              </div>
+            </div>
+            <button onclick="removeCartItem(${index})" title="Remover item" class="absolute top-3 right-3 text-gray-400 hover:text-red-400 transition-colors p-1 text-xs">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        `;
+      });
+
+      listContainer.innerHTML = html;
+    }
+
+    function updateCartItemQty(index, delta) {
+      const item = cart[index];
+      if (!item) return;
+      const newQty = item.quantity + delta;
+      if (newQty <= 0) {
+        removeCartItem(index);
+        return;
+      }
+      item.quantity = newQty;
+      localStorage.setItem('progfolia_cart_2027', JSON.stringify(cart));
+      renderCartUI();
+      renderStockBadges();
+    }
+
+    function removeCartItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('progfolia_cart_2027', JSON.stringify(cart));
+      renderCartUI();
+      renderStockBadges();
+    }
+
+    function clearCart() {
+      if (cart.length === 0) return;
+      cart = [];
+      localStorage.setItem('progfolia_cart_2027', JSON.stringify(cart));
+      renderCartUI();
+      renderStockBadges();
+      showToast("Carrinho Limpo", "Todos os itens foram removidos.");
+    }
+
+    function checkoutCart() {
+      if (cart.length === 0) return;
+      openCheckoutModal();
+    }
+
+    function openCheckoutModal() {
+      const modal = document.getElementById('checkoutModal');
+      const summaryList = document.getElementById('modalOrderSummaryList');
+      const totalDisplay = document.getElementById('modalOrderTotal');
+      const multiItemNotice = document.getElementById('multiItemNotice');
+      const multiItemCount = document.getElementById('multiItemCount');
+      const btnMainCheckoutText = document.getElementById('btnMainCheckoutText');
+      if (!modal) return;
+
+      const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalAmount = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+      totalDisplay.innerText = `R$ ${totalAmount.toFixed(2).replace('.', ',')}`;
+
+      if (totalItemsCount > 1) {
+        multiItemNotice.classList.remove('hidden');
+        multiItemCount.innerText = `${totalItemsCount}`;
+        btnMainCheckoutText.innerText = `PAGAR R$ ${totalAmount.toFixed(2).replace('.', ',')} NO MERCADO PAGO`;
+      } else {
+        multiItemNotice.classList.add('hidden');
+        btnMainCheckoutText.innerText = `PAGAR COM PIX OU CARTÃO`;
+      }
+
+      let html = '';
+      cart.forEach(item => {
+        const itemSubtotal = item.unitPrice * item.quantity;
+        const sizeTag = item.isCustom ? `Sob Encomenda (${item.customLabel})` : item.size;
+        html += `
+          <div class="flex justify-between items-center py-0.5 border-b border-white/5">
+            <span>• ${item.quantity}x Abadá Oficial [${sizeTag}]</span>
+            <span class="text-white font-bold">R$ ${itemSubtotal.toFixed(2).replace('.', ',')}</span>
+          </div>
+        `;
+      });
+
+      summaryList.innerHTML = html;
+      modal.classList.remove('hidden');
+      toggleCartDrawer(false);
+    }
+
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkoutModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // =========================================================================
+    // EXECUÇÃO DO CHECKOUT DINÂMICO VIA MERCADO PAGO
+    // =========================================================================
+    async function handleProceedPayment(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('buyerName').value.trim();
+      const phone = document.getElementById('buyerPhone').value.trim();
+      const email = document.getElementById('buyerEmail').value.trim();
+      const btn = document.getElementById('btnMainCheckout');
+      const btnText = document.getElementById('btnMainCheckoutText');
+      const btnIcon = document.getElementById('btnCheckoutIcon');
+      const errorBox = document.getElementById('checkoutApiError');
+      const errorMsg = document.getElementById('checkoutApiErrorMsg');
+
+      if (errorBox) errorBox.classList.add('hidden');
+
+      if (!name || !phone || !email) {
+        showToast("Atenção", "Preencha todos os campos para prosseguir.", false);
+        return;
+      }
+
+      const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalAmount = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+
+      // Estado de carregamento no botão
+      btn.disabled = true;
+      btn.classList.add('opacity-75');
+      btnIcon.className = "fa-solid fa-spinner animate-spin text-base";
+      btnText.innerText = "GERANDO TELA DE PAGAMENTO...";
 
       try {
-        const response = await fetch('/api/create-preference', {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+        const response = await fetch(CONFIG.API_CHECKOUT_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            buyer: { name, phone, email },
+            items: cart
+          }),
+          signal: controller.signal
         });
 
-        const data = await response.json();
+        clearTimeout(timeoutId);
 
-        if (response.ok && data.init_point) {
-          window.location.href = data.init_point;
-        } else {
-          throw new Error(data.error || 'O servidor não retornou o link de pagamento.');
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.init_point) {
+            const currentSales = getTotalSalesCount();
+            localStorage.setItem('progfolia_total_sales_2027', currentSales + totalItemsCount);
+
+            showToast("Abrindo Bilheteria...", "Redirecionando para a tela de pagamento oficial.");
+            
+            setTimeout(() => {
+              window.location.href = data.init_point;
+            }, 600);
+            return;
+          }
         }
+
+        const errPayload = await response.json().catch(() => ({}));
+        let errorDetail = errPayload.error || "O servidor recusou a criação do pagamento.";
+        if (errPayload.details) {
+          errorDetail += ` (${typeof errPayload.details === 'string' ? errPayload.details : JSON.stringify(errPayload.details)})`;
+        }
+        
+        console.error("Erro retornado pelo backend:", errPayload);
+        if (errorBox && errorMsg) {
+          errorBox.classList.remove('hidden');
+          errorMsg.innerText = errorDetail;
+        }
+        showToast("Falha na Operação", "Verifique a mensagem na tela.", false);
+
       } catch (err) {
-        errorBox.innerText = `Erro: ${err.message}`;
-        errorBox.style.display = 'block';
-        btnSubmit.disabled = false;
-        btnSubmit.innerText = textoOriginal;
+        console.error("Falha na chamada da API:", err);
+        if (errorBox && errorMsg) {
+          errorBox.classList.remove('hidden');
+          errorMsg.innerText = `Não foi possível alcançar a rota '/api/create-preference': ${err.message}. Verifique se a variável MP_ACCESS_TOKEN está salva na Cloudflare.`;
+        }
+        showToast("Sem Conexão", "Não foi possível conectar ao checkout.", false);
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75');
+        btnIcon.className = "fa-solid fa-lock text-base";
+        btnText.innerText = `PAGAR R$ ${totalAmount.toFixed(2).replace('.', ',')} NO MERCADO PAGO`;
       }
     }
 
-    window.addEventListener('click', function(e) {
-      const modal = document.getElementById('modalCheckout');
-      if (e.target === modal) {
-        fecharModal();
+    // =========================================================================
+    // UTILITÁRIOS & CONFETES
+    // =========================================================================
+    function initCountdown() {
+      document.getElementById('countdownDays').innerText = "00";
+      document.getElementById('countdownHours').innerText = "00";
+      document.getElementById('countdownMinutes').innerText = "00";
+      document.getElementById('countdownSeconds').innerText = "00";
+    }
+
+    document.getElementById('sorteioForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nome = document.getElementById('sorteioNome').value.trim();
+      const instagram = document.getElementById('sorteioInstagram').value.trim();
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      const luckyNum = `#PROG-${randomCode}`;
+
+      document.getElementById('luckyNumberDisplay').innerText = luckyNum;
+      document.getElementById('luckyParticipantName').innerText = `${nome} (${instagram})`;
+      document.getElementById('sorteioForm').classList.add('hidden');
+      document.getElementById('sorteioResult').classList.remove('hidden');
+
+      confetti({ particleCount: 150, spread: 90, origin: { y: 0.65 } });
+      showToast("Número Gerado!", `Você está concorrendo com o número ${luckyNum}.`);
+    });
+
+    function resetSorteioForm() {
+      document.getElementById('sorteioForm').reset();
+      document.getElementById('sorteioForm').classList.remove('hidden');
+      document.getElementById('sorteioResult').classList.add('hidden');
+    }
+
+    function copyPixKey() {
+      const input = document.getElementById('pixKeyInput');
+      input.select();
+      document.execCommand('copy');
+      showToast("PIX Copiado!", "Chave PIX copiada para a área de transferência.");
+    }
+
+    function copySpotifyLink() {
+      const dummyInput = document.createElement('input');
+      dummyInput.value = CONFIG.SPOTIFY_PLAYLIST_URL;
+      document.body.appendChild(dummyInput);
+      dummyInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummyInput);
+      showToast("Link Copiado!", "Link da playlist do Spotify copiado com sucesso!");
+    }
+
+    function toggleFaqPopup() {
+      document.getElementById('faqPopup').classList.toggle('hidden');
+    }
+
+    function faqAnswer(topic) {
+      if (topic === 'gratuito') {
+        showToast("100% Gratuito na Rua", "O cortejo na avenida é livre para todos. O abadá garante brindes e apoia o trio.");
+      } else if (topic === 'abada') {
+        showToast("Uso do Abadá", "Não é obrigatório para curtir na rua, mas fortalece a sustentabilidade do bloco.");
       }
+    }
+
+    function showToast(title, message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastMessage').innerText = message;
+      document.getElementById('toastIcon').className = isSuccess 
+        ? "w-9 h-9 rounded-full flex items-center justify-center bg-trance-neonCyan text-trance-black font-black text-sm"
+        : "w-9 h-9 rounded-full flex items-center justify-center bg-red-500 text-white font-black text-sm";
+      document.getElementById('toastIcon').innerHTML = isSuccess ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-exclamation"></i>';
+
+      toast.classList.remove('translate-x-[160%]');
+      toast.classList.add('translate-x-0');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-x-0');
+        toast.classList.add('translate-x-[160%]');
+      }, 4000);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    document.querySelectorAll('.mobile-nav-link').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+    function initCarnivalConfetti() {
+      function setupConfetti(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        const palette = ['rgba(0, 245, 212, 0.75)', 'rgba(255, 0, 127, 0.75)', 'rgba(255, 230, 0, 0.8)', 'rgba(138, 43, 226, 0.75)', 'rgba(57, 255, 20, 0.75)'];
+        const count = window.innerWidth < 768 ? 35 : 65;
+        const confetti = [];
+
+        for (let i = 0; i < count; i++) {
+          confetti.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 6 + 4,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            speedY: Math.random() * 1.1 + 0.6,
+            speedX: (Math.random() - 0.5) * 0.7,
+            angle: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 2.2,
+            wobble: Math.random() * Math.PI * 2,
+            wobbleSpeed: Math.random() * 0.035 + 0.015,
+            shape: Math.random() > 0.45 ? 'rect' : 'circle'
+          });
+        }
+
+        function render() {
+          if (canvasId === 'splashConfettiCanvas') {
+            const splash = document.getElementById('splashScreen');
+            if (splash && (splash.style.display === 'none' || splash.classList.contains('splash-exit'))) return;
+          }
+          ctx.clearRect(0, 0, width, height);
+          for (let p of confetti) {
+            p.y += p.speedY;
+            p.x += Math.sin(p.wobble) * 0.75 + p.speedX;
+            p.wobble += p.wobbleSpeed;
+            p.angle += p.rotationSpeed;
+            if (p.y > height + 20) { p.y = -20; p.x = Math.random() * width; }
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.angle * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+              ctx.beginPath();
+              ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              const scaleY = Math.cos(p.wobble);
+              ctx.fillRect(-p.size / 2, (-p.size * scaleY) / 2, p.size, p.size * scaleY * 1.35);
+            }
+            ctx.restore();
+          }
+          requestAnimationFrame(render);
+        }
+        render();
+      }
+      setupConfetti('carnivalBgCanvas');
+      setupConfetti('splashConfettiCanvas');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('pixKeyInput').value = CONFIG.PIX_KEY;
+      document.getElementById('pixTitularDisplay').innerText = CONFIG.PIX_TITULAR;
+      const waText = encodeURIComponent("Olá! Estou no site do Prog Folia e tenho dúvidas sobre o bloco de Carnaval.");
+      document.getElementById('btnFaqWhatsApp').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${waText}`;
+
+      const audioEl = document.getElementById('bgAudio');
+      if (audioEl) {
+        audioEl.addEventListener('play', () => { isPlaying = true; updateAudioUI(true); });
+        audioEl.addEventListener('pause', () => { isPlaying = false; updateAudioUI(false); });
+      }
+
+      initCountdown();
+      renderStockBadges();
+      renderCartUI();
+      updateAdminVisibility();
+      initCarnivalConfetti();
     });
   </script>
 </body>
