@@ -9,41 +9,267 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #08080c;
-      --card-bg: rgba(20, 20, 32, 0.75);
+      --bg-dark: #06070b;
+      --bg-card: rgba(16, 18, 28, 0.85);
       --neon-cyan: #00f3ff;
       --neon-magenta: #ff0055;
       --neon-lime: #39ff14;
+      --neon-purple: #8b00ff;
       --text-main: #f0f4f8;
-      --text-muted: #8a99ad;
-      --border-glow: rgba(0, 243, 255, 0.25);
+      --text-muted: #8c9bb0;
+      --border-glow: rgba(0, 243, 255, 0.22);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      scroll-behavior: smooth;
     }
 
     body {
       background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(circle at 15% 20%, rgba(255, 0, 85, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(0, 243, 255, 0.12) 0%, transparent 40%);
+        radial-gradient(circle at 10% 15%, rgba(255, 0, 85, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 40%, rgba(0, 243, 255, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(139, 0, 255, 0.1) 0%, transparent 50%);
       color: var(--text-main);
       font-family: 'Rajdhani', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    header {
-      padding: 3.5rem 1.5rem 2rem;
+    /* GATE DE ENTRADA COM ÁUDIO */
+    .audio-gate {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #111422 0%, #050608 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
       text-align: center;
+      padding: 1.5rem;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
 
-    .badge {
+    .audio-gate.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .gate-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.2rem, 7vw, 4.5rem);
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, #fff, var(--neon-cyan), var(--neon-magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.3rem;
+    }
+
+    .gate-sub {
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .gate-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .btn-gate-sound {
+      padding: 1.1rem;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+      color: #030a16;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-gate-sound:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 40px rgba(0, 243, 255, 0.7);
+    }
+
+    .btn-gate-mute {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+      padding: 0.8rem;
+      border-radius: 50px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-gate-mute:hover {
+      border-color: var(--text-main);
+      color: var(--text-main);
+    }
+
+    /* PLAYER DE ÁUDIO FLUTUANTE */
+    .player-floating {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: rgba(12, 14, 22, 0.92);
+      border: 1px solid var(--border-glow);
+      backdrop-filter: blur(12px);
+      padding: 0.7rem 1.2rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 999;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .player-equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 18px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--neon-cyan);
+      border-radius: 2px;
+      animation: eqBounce 1.2s infinite ease-in-out alternate;
+    }
+
+    .eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+    .eq-bar:nth-child(2) { height: 90%; animation-delay: 0.3s; background: var(--neon-lime); }
+    .eq-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+    .eq-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; background: var(--neon-magenta); }
+
+    .player-equalizer.paused .eq-bar {
+      animation: none;
+      height: 4px;
+    }
+
+    @keyframes eqBounce {
+      0% { height: 20%; }
+      100% { height: 100%; }
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .player-track {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      letter-spacing: 1px;
+    }
+
+    .player-artist {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .player-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .player-btn:hover {
+      color: var(--neon-cyan);
+    }
+
+    /* BARRA DE NAVEGAÇÃO */
+    nav {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: rgba(6, 7, 11, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 800;
+      padding: 0.9rem 1.5rem;
+    }
+
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: 2px;
+    }
+
+    .nav-brand span {
+      color: var(--neon-cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--neon-cyan);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-tag {
       display: inline-block;
-      padding: 0.35rem 1rem;
+      padding: 0.35rem 1.2rem;
       border: 1px solid var(--neon-cyan);
       border-radius: 50px;
       font-family: 'Orbitron', sans-serif;
@@ -51,43 +277,110 @@
       color: var(--neon-cyan);
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
     }
 
-    h1 {
+    .hero-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.3rem, 6vw, 4.2rem);
+      font-size: clamp(2.5rem, 7vw, 5rem);
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      line-height: 1.1;
-      background: linear-gradient(135deg, #fff 0%, var(--neon-cyan) 60%, var(--neon-magenta) 100%);
+      letter-spacing: 4px;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #ffffff 0%, var(--neon-cyan) 50%, var(--neon-magenta) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.8rem;
     }
 
-    .subtitle {
-      font-size: 1.15rem;
+    .hero-subtitle {
+      font-size: 1.3rem;
       color: var(--text-muted);
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       text-transform: uppercase;
+      margin-bottom: 2rem;
     }
 
-    main {
-      max-width: 900px;
+    .hero-desc {
+      max-width: 680px;
+      margin: 0 auto 2.5rem;
+      font-size: 1.15rem;
+      color: #c9d6e4;
+    }
+
+    /* CONTAINER PADRÃO */
+    .section-container {
+      max-width: 1050px;
       margin: 0 auto;
-      padding: 1rem 1.5rem 5rem;
+      padding: 3.5rem 1.5rem;
     }
 
-    /* Aviso de Fabricação e Pedidos */
+    .section-heading {
+      text-align: center;
+      margin-bottom: 2.8rem;
+    }
+
+    .section-heading h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .section-heading p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+    }
+
+    /* MANIFESTO MEMENTO VIVERE */
+    .manifesto-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 3rem 2.2rem;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .manifesto-box::before {
+      content: '🔥';
+      position: absolute;
+      top: -20px;
+      right: 20px;
+      font-size: 8rem;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .manifesto-quote {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.35rem;
+      color: var(--neon-cyan);
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .manifesto-body p {
+      font-size: 1.15rem;
+      margin-bottom: 1.2rem;
+      color: #d1dde9;
+    }
+
+    /* COMUNICADO DE FABRICAÇÃO E PEDIDOS */
     .fabrication-notice {
       background: rgba(0, 243, 255, 0.05);
       border: 1px solid rgba(0, 243, 255, 0.25);
       border-left: 4px solid var(--neon-cyan);
       border-radius: 12px;
-      padding: 1.25rem 1.5rem;
+      padding: 1.3rem 1.6rem;
       margin-bottom: 2.5rem;
       display: flex;
       align-items: flex-start;
@@ -116,38 +409,38 @@
       color: #d8e5f2;
     }
 
-    /* Container de Compra Centralizado */
+    /* CARD DE VENDA OFICIAL */
     .ticket-container {
-      max-width: 480px;
+      max-width: 500px;
       margin: 0 auto;
     }
 
     .ticket-card {
-      background: var(--card-bg);
+      background: var(--bg-card);
       border: 1px solid var(--neon-cyan);
       border-radius: 20px;
-      padding: 2.5rem 2rem;
-      backdrop-filter: blur(12px);
+      padding: 2.8rem 2.2rem;
+      backdrop-filter: blur(14px);
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+      box-shadow: 0 0 35px rgba(0, 243, 255, 0.15);
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
     .ticket-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 35px rgba(0, 243, 255, 0.25);
+      box-shadow: 0 10px 40px rgba(0, 243, 255, 0.25);
     }
 
     .ticket-tag {
       position: absolute;
-      top: 1.3rem;
-      right: 1.3rem;
+      top: 1.4rem;
+      right: 1.4rem;
       font-size: 0.75rem;
       font-family: 'Orbitron', sans-serif;
       letter-spacing: 1px;
-      padding: 0.35rem 0.75rem;
+      padding: 0.35rem 0.8rem;
       border-radius: 6px;
       background: rgba(57, 255, 20, 0.15);
       color: var(--neon-lime);
@@ -156,7 +449,7 @@
 
     .ticket-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.45rem;
+      font-size: 1.5rem;
       margin-bottom: 0.3rem;
     }
 
@@ -169,7 +462,7 @@
 
     .ticket-price {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.6rem;
+      font-size: 2.8rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 1.5rem;
@@ -183,7 +476,7 @@
 
     .ticket-features {
       list-style: none;
-      margin-bottom: 2.2rem;
+      margin-bottom: 2.4rem;
     }
 
     .ticket-features li {
@@ -203,7 +496,7 @@
 
     .btn-buy {
       width: 100%;
-      padding: 1.1rem;
+      padding: 1.15rem;
       border: none;
       border-radius: 10px;
       background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
@@ -230,7 +523,78 @@
       transform: none;
     }
 
-    /* Modal Checkout */
+    /* CONTRIBUIÇÃO VOLUNTÁRIA */
+    .pix-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 0, 85, 0.3);
+      border-radius: 20px;
+      padding: 2.8rem 2.2rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 0 35px rgba(255, 0, 85, 0.1);
+    }
+
+    .pix-box h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: var(--neon-magenta);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .pix-box p {
+      font-size: 1.05rem;
+      color: #cad6e2;
+      margin-bottom: 1.8rem;
+    }
+
+    .pix-copy-area {
+      display: flex;
+      align-items: center;
+      background: #08090f;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 0.5rem 0.8rem;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .pix-key {
+      flex: 1;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.95rem;
+      color: var(--neon-cyan);
+      word-break: break-all;
+      text-align: left;
+    }
+
+    .btn-copy {
+      padding: 0.6rem 1.2rem;
+      background: rgba(0, 243, 255, 0.15);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      border-radius: 6px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+      background: var(--neon-cyan);
+      color: #000;
+    }
+
+    .pix-holder {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* MODAL CHECKOUT */
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -242,7 +606,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      z-index: 9999;
       padding: 1rem;
     }
 
@@ -385,52 +749,178 @@
       color: #009ee3;
       font-weight: 700;
     }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    footer p {
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .player-floating {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        justify-content: space-between;
+      }
+      .manifesto-box {
+        padding: 2rem 1.4rem;
+      }
+      .ticket-card {
+        padding: 2rem 1.4rem;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="badge">Carnaval Eletrônico 2027</div>
-    <h1>PROG FOLIA</h1>
-    <p class="subtitle">Vitória • Espírito Santo | Memento Vivere</p>
+  <!-- GATE DE ENTRADA COM SOM -->
+  <div class="audio-gate" id="audioGate">
+    <div class="gate-logo">PROG FOLIA</div>
+    <p class="gate-sub">Carnaval Eletrônico • Vitória / ES</p>
+    <div class="gate-buttons">
+      <button class="btn-gate-sound" onclick="entrarNoSite(true)">⚡ ENTRAR COM SOM</button>
+      <button class="btn-gate-mute" onclick="entrarNoSite(false)">Entrar em silêncio</button>
+    </div>
+  </div>
+
+  <!-- PLAYER DE ÁUDIO OCULTO COM STREAMING -->
+  <audio id="audioPlayer" loop preload="auto">
+    <!-- Link direto Dropbox com parâmetro raw=1 para streaming contínuo -->
+    <source src="https://www.dropbox.com/scl/fi/vks9c9u4t9i1s81/ProgFoliaByZeppy.mp3?raw=1" type="audio/mpeg">
+    <source src="ProgFoliaByZeppy.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- PLAYER FLUTUANTE PERSISTENTE -->
+  <div class="player-floating">
+    <div class="player-equalizer paused" id="equalizerVisual">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+    <div class="player-info">
+      <span class="player-track">PROG FOLIA</span>
+      <span class="player-artist">by Zeppy</span>
+    </div>
+    <button class="player-btn" id="btnToggleAudio" onclick="toggleAudio()" title="Play / Pausar">▶</button>
+  </div>
+
+  <!-- MENU SUPERIOR -->
+  <nav>
+    <div class="nav-container">
+      <a href="#" class="nav-brand">PROG <span>FOLIA</span></a>
+      <ul class="nav-links">
+        <li><a href="#manifesto">Manifesto</a></li>
+        <li><a href="#abada">Abadá Oficial</a></li>
+        <li><a href="#contribuicao">Contribuição Voluntária</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="hero-tag">Edição Histórica 2027</div>
+    <h1 class="hero-title">PROG FOLIA</h1>
+    <p class="hero-subtitle">Vitória • Espírito Santo | Memento Vivere</p>
+    <p class="hero-desc">
+      O pioneiro bloco de Psytrance das ruas capixabas. A união entre a energia frenética do Carnaval e a cultura eletrônica psicodélica no coração da capital.
+    </p>
   </header>
 
   <main>
-    <!-- Comunicado Oficial de Produção e Entrega -->
-    <section class="fabrication-notice">
-      <div class="fabrication-icon">📢</div>
-      <div class="fabrication-text">
-        <strong>Aviso Importante sobre Produção & Entrega:</strong>
-        <p>Informamos que todos os pedidos serão feitos no dia <strong>26 de dezembro</strong>, pois os abadás levam cerca de 30 dias para serem fabricados. Mas não se preocupem, assim que estiverem prontos entraremos em contato avisando que seu abadá está pronto para entrega ou retirada!</p>
+    <!-- SEÇÃO MANIFESTO MEMENTO VIVERE -->
+    <section class="section-container" id="manifesto">
+      <div class="section-heading">
+        <h2>O Manifesto</h2>
+        <p>A filosofia que conduz o nosso cortejo</p>
+      </div>
+      <div class="manifesto-box">
+        <h3 class="manifesto-quote">Memento Vivere: Lembre-se de Viver</h3>
+        <div class="manifesto-body">
+          <p>
+            Em um mundo que tantas vezes nos impõe a pressa e a dormência, o <strong>Prog Folia</strong> se ergue como um grito de presença e celebração. Sob a égide do <em>Memento Vivere</em>, rejeitamos a mera sobrevivência passiva para celebrar ativamente a intensidade de cada instante compartilhado.
+          </p>
+          <p>
+            Guiados pelo símbolo da <strong>Fênix</strong> — a ave mitológica que ressurge das próprias cinzas —, transformamos o asfalto do Centro de Vitória em um santuário de renovação, união e respeito mútuo. Cada batida é um pulsar coletivo; cada passo na pista é um ato de renascimento.
+          </p>
+        </div>
       </div>
     </section>
 
-    <!-- Card de Venda Oficial -->
-    <div class="ticket-container">
-      <div class="ticket-card" id="mainCard">
-        <span class="ticket-tag" id="badgeLote">PRÉ-VENDA EXCLUSIVA</span>
-        <h3 class="ticket-title" id="titleLote">Abadá Oficial 2027</h3>
-        <p class="ticket-deadline" id="deadlineLote">Válido até 01 de dezembro de 2026</p>
-        
-        <div class="ticket-price">
-          R$ <span id="priceValue">55,00</span> <span>/ unidade</span>
-        </div>
-
-        <ul class="ticket-features">
-          <li>Tecido Dry Fit tecnológico de alta performance</li>
-          <li>Acesso ao trio elétrico no Centro de Vitória</li>
-          <li>Arte oficial temática Memento Vivere</li>
-          <li>Pulseira oficial do bloco inclusa</li>
-        </ul>
-
-        <button class="btn-buy" id="btnBuyMain" onclick="comprarLoteAtual()">
-          Garantir Pré-Venda (R$ 55,00)
-        </button>
+    <!-- SEÇÃO ABADÁ OFICIAL E VENDAS -->
+    <section class="section-container" id="abada">
+      <div class="section-heading">
+        <h2>Abadá Oficial 2027</h2>
+        <p>Garanta o manto sagrado do nosso cortejo</p>
       </div>
-    </div>
+
+      <!-- Comunicado Oficial de Produção e Entrega -->
+      <div class="fabrication-notice">
+        <div class="fabrication-icon">📢</div>
+        <div class="fabrication-text">
+          <strong>Aviso Importante sobre Produção & Entrega:</strong>
+          <p>Informamos que todos os pedidos serão feitos no dia <strong>26 de dezembro</strong>, pois os abadás levam cerca de 30 dias para serem fabricados. Mas não se preocupem, assim que estiverem prontos entraremos em contato avisando que seu abadá está pronto para entrega ou retirada!</p>
+        </div>
+      </div>
+
+      <!-- Card de Venda Oficial -->
+      <div class="ticket-container">
+        <div class="ticket-card" id="mainCard">
+          <span class="ticket-tag" id="badgeLote">PRÉ-VENDA EXCLUSIVA</span>
+          <h3 class="ticket-title" id="titleLote">Abadá Oficial 2027</h3>
+          <p class="ticket-deadline" id="deadlineLote">Válido até 01 de dezembro de 2026</p>
+          
+          <div class="ticket-price">
+            R$ <span id="priceValue">55,00</span> <span>/ unidade</span>
+          </div>
+
+          <ul class="ticket-features">
+            <li>Tecido Dry Fit tecnológico de alta performance</li>
+            <li>Acesso ao trio elétrico no Centro de Vitória</li>
+            <li>Arte oficial temática Memento Vivere</li>
+            <li>Pulseira oficial do bloco inclusa</li>
+          </ul>
+
+          <button class="btn-buy" id="btnBuyMain" onclick="comprarLoteAtual()">
+            Garantir Pré-Venda (R$ 55,00)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO CONTRIBUIÇÃO VOLUNTÁRIA -->
+    <section class="section-container" id="contribuicao">
+      <div class="section-heading">
+        <h2>Contribuição Voluntária</h2>
+        <p>Apoie a cultura independente e a estrutura do cortejo</p>
+      </div>
+
+      <div class="pix-box">
+        <h3>Faça o Bloco Acontecer</h3>
+        <p>
+          O Prog Folia é uma iniciativa independente e colaborativa feita para foliões de todas as regiões. Toda contribuição voluntária é integralmente revertida para viabilizar insumos, logística, segurança, hidratação e a estrutura do nosso trio elétrico no Centro de Vitória.
+        </p>
+
+        <div class="pix-copy-area">
+          <span class="pix-key" id="pixKeyText">pix@progfolia.com.br</span>
+          <button class="btn-copy" id="btnCopyPix" onclick="copiarPix()">Copiar Chave</button>
+        </div>
+        <p class="pix-holder">Chave Pix Oficial • Titular: <strong>Coletivo Prog Folia ES</strong></p>
+      </div>
+    </section>
   </main>
 
-  <!-- Modal Checkout -->
+  <!-- MODAL DE CHECKOUT -->
   <div class="modal-backdrop" id="modalCheckout">
     <div class="modal-box">
       <button class="modal-close" onclick="fecharModal()">&times;</button>
@@ -464,7 +954,7 @@
 
         <div class="form-group">
           <label for="buyerName">Nome Completo</label>
-          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Lucas Ferreira" required>
+          <input type="text" class="form-control" id="buyerName" placeholder="Ex: Roberto Silva" required>
         </div>
 
         <div class="form-group">
@@ -488,23 +978,59 @@
         </button>
 
         <div class="mp-banner">
-          🔒 Ambiente Seguro <span>Mercado Pago</span> (PIX ou Cartão em até 12x)
+          🔒 Processamento Seguro via <span>Mercado Pago</span> (PIX ou Cartão em até 12x)
         </div>
       </form>
     </div>
   </div>
 
+  <footer>
+    <p><strong>PROG FOLIA 2027</strong> • Vitória • Espírito Santo</p>
+    <p>O Primeiro Bloco de Psytrance do ES • Memento Vivere</p>
+  </footer>
+
   <script>
-    // =========================================================================
-    // PAINEL DE CONTROLE INTERNO (GESTÃO DE LOTES E METAS)
-    // =========================================================================
+    // ==========================================
+    // CONTROLE DE ÁUDIO E GATE DE ENTRADA
+    // ==========================================
+    const audio = document.getElementById('audioPlayer');
+    const eq = document.getElementById('equalizerVisual');
+    const btnToggle = document.getElementById('btnToggleAudio');
+    const gate = document.getElementById('audioGate');
+
+    function entrarNoSite(comSom) {
+      gate.classList.add('hidden');
+      if (comSom) {
+        audio.play().then(() => {
+          eq.classList.remove('paused');
+          btnToggle.innerText = '❚❚';
+        }).catch(err => {
+          console.log('Autoplay com restrição do navegador:', err);
+        });
+      }
+    }
+
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+        eq.classList.remove('paused');
+        btnToggle.innerText = '❚❚';
+      } else {
+        audio.pause();
+        eq.classList.add('paused');
+        btnToggle.innerText = '▶';
+      }
+    }
+
+    // ==========================================
+    // REGRAS DE LOTES E TRANSIÇÕES INTERNAS
+    // ==========================================
     const CONFIG = {
-      // Atualize o total de vendas confirmadas aqui para acionar a virada manual:
+      // Ajuste este contador conforme os pagamentos forem confirmados na planilha:
       vendasConfirmadas: 0,
       limitePreVenda: 60,
 
-      // Prazos oficiais (horário de Brasília)
-      // Pré-venda: até 01/12/2026 às 23:59:59
+      // Pré-venda: até 01/12/2026 às 23:59:59 (horário de Brasília)
       dataFimPreVenda: new Date('2026-12-01T23:59:59-03:00'),
       // 1º Lote: de 02/12/2026 até 25/12/2026 às 23:59:59
       dataFimLote1: new Date('2026-12-25T23:59:59-03:00')
@@ -514,8 +1040,8 @@
 
     function calcularLote() {
       const agora = new Date();
-      const atingiuMeta = CONFIG.vendasConfirmadas >= CONFIG.limitePreVenda;
-      const passouPreVenda = agora > CONFIG.dataFimPreVenda;
+      const bateuMetaInterna = CONFIG.vendasConfirmadas >= CONFIG.limitePreVenda;
+      const passouDataPreVenda = agora > CONFIG.dataFimPreVenda;
       const vendasEncerradas = agora > CONFIG.dataFimLote1;
 
       if (vendasEncerradas) {
@@ -524,13 +1050,13 @@
           tag: 'VENDAS ENCERRADAS',
           titulo: 'Abadá Oficial 2027 (Encerrado)',
           preco: 65.00,
-          prazo: 'Lote fechado para início da fabricação em 26/12',
+          prazo: 'Lote fechado para início da fabricação no dia 26/12',
           disponivel: false
         };
       }
 
-      // Transição para 1º Lote (se atingir 60 vendas confirmadas OU a partir de 02/12/2026)
-      if (atingiuMeta || passouPreVenda) {
+      // Transição para 1º Lote (ao atingir 60 vendas confirmadas internamente OU a partir de 02/12/2026)
+      if (bateuMetaInterna || passouDataPreVenda) {
         return {
           fase: 'LOTE_1',
           tag: '1º LOTE OFICIAL',
@@ -573,14 +1099,14 @@
         btnBuy.innerText = `Garantir 1º Lote (R$ ${loteAtual.preco.toFixed(2).replace('.', ',')})`;
         btnBuy.disabled = false;
       } else {
-        btnBuy.innerText = 'Vendas Encerradas';
+        btnBuy.innerText = 'Vendas Finalizadas';
         btnBuy.disabled = true;
       }
     }
 
-    // =========================================================================
-    // FLUXO DO CHECKOUT
-    // =========================================================================
+    // ==========================================
+    // CHECKOUT MERCADO PAGO + PLANILHA
+    // ==========================================
     let carrinho = {
       titulo: '',
       precoUnitario: 55.00,
@@ -678,6 +1204,22 @@
       }
     }
 
+    // Copiar Chave Pix
+    function copiarPix() {
+      const pixKey = document.getElementById('pixKeyText').innerText;
+      navigator.clipboard.writeText(pixKey).then(() => {
+        const btn = document.getElementById('btnCopyPix');
+        btn.innerText = 'Copiado!';
+        btn.style.background = 'var(--neon-lime)';
+        btn.style.color = '#000';
+        setTimeout(() => {
+          btn.innerText = 'Copiar Chave';
+          btn.style.background = 'rgba(0, 243, 255, 0.15)';
+          btn.style.color = 'var(--neon-cyan)';
+        }, 2500);
+      });
+    }
+
     window.addEventListener('click', function(e) {
       const modal = document.getElementById('modalCheckout');
       if (e.target === modal) {
@@ -685,6 +1227,7 @@
       }
     });
 
+    // Inicia a checagem dinâmica de lote
     renderizarInterface();
   </script>
 </body>
