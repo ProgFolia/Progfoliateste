@@ -784,8 +784,9 @@
 
       <div class="bg-gradient-to-b from-trance-card to-purple-950/50 rounded-3xl border-2 border-trance-neonPink/50 p-6 sm:p-10 shadow-2xl relative glow-pink">
         
-        <div id="lotBadgeDisplay" class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-trance-neonPink to-trance-solarGold text-trance-black font-psy font-black text-[11px] uppercase tracking-wider shadow-lg">
-          ⚡ PRÉ-VENDA PROMOCIONAL (ATÉ 60 VENDAS OU 01/DEZ)
+        <!-- BADGE DO TOPO: APENAS '⚡ PRÉ-VENDA PROMOCIONAL' -->
+        <div id="lotBadgeDisplay" class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full bg-gradient-to-r from-trance-neonPink to-trance-solarGold text-trance-black font-psy font-black text-[11px] uppercase tracking-wider shadow-lg whitespace-nowrap">
+          ⚡ PRÉ-VENDA PROMOCIONAL
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-2">
@@ -1216,7 +1217,7 @@
           price: CONFIG.FIRST_LOT_PRICE,
           name: "Lote Encerrado",
           label: "STATUS DE PEDIDOS:",
-          badge: "⏳ PEDIDOS FECHADOS PARA FABRICAÇÃO (26/DEZ)",
+          badge: "⏳ PEDIDOS FECHADOS PARA FABRICAÇÃO",
           titleTag: "EM PRODUÇÃO",
           subtitle: "Pedidos encerrados em 25/12 para confecção oficial.",
           nextText: "Todos os pedidos foram para fabricação dia 26/12",
@@ -1230,9 +1231,9 @@
           price: CONFIG.FIRST_LOT_PRICE,
           name: "1º Lote",
           label: "VALOR 1º LOTE:",
-          badge: "🔥 1º LOTE OFICIAL (ATÉ 25/DEZ)",
+          badge: "🔥 1º LOTE OFICIAL",
           titleTag: "1º LOTE",
-          subtitle: "1º Lote oficial aberto até 25 de dezembro de 2026!",
+          subtitle: "1º Lote oficial aberto!",
           nextText: "Pedidos encerram dia 25/12 para fabricação em 26/12",
           isClosed: false
         };
@@ -1243,7 +1244,7 @@
         price: CONFIG.PRE_SALE_PRICE,
         name: "Pré-Venda",
         label: "VALOR PRÉ-VENDA:",
-        badge: "⚡ PRÉ-VENDA PROMOCIONAL (ATÉ 60 VENDAS OU 01/DEZ)",
+        badge: "⚡ PRÉ-VENDA PROMOCIONAL",
         titleTag: "PRÉ-VENDA",
         subtitle: "Garanta já o seu abadá oficial com valor promocional exclusivo de pré-venda!",
         nextText: `1º Lote: R$ ${CONFIG.FIRST_LOT_PRICE},00 (após 60 vendas ou a partir de 02/12)`,
