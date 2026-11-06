@@ -1,166 +1,186 @@
-// functions/api/create-preference.js
-// Cloudflare Pages Function • Mercado Pago Checkout Pro (PIX & Cartão em até 12x)
+/**
+ * functions/api/create-preference.js
+ * Cloudflare Pages Function - Integração Mercado Pago + Google Sheets
+ */
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Content-Type': 'application/json'
+};
 
 export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
+  return new Response(null, { status: 204, headers: corsHeaders });
+}
+
+// Rota GET de diagnóstico: abra /api/create-preference no navegador para testar
+export async function onRequestGet(context) {
+  const { env } = context;
+  const mpConfigurado = Boolean(env.MP_ACCESS_TOKEN);
+  const sheetsConfigurado = Boolean(env.GOOGLE_SHEET_WEBHOOK_URL);
+
+  return new Response(JSON.stringify({
+    status: 'online',
+    mercado_pago_ativo: mpConfigurado,
+    google_sheets_ativo: sheetsConfigurado,
+    mensagem: mpConfigurado 
+      ? 'Configuração pronta para processar vendas.' 
+      : 'Defina a variável MP_ACCESS_TOKEN nas configurações da Cloudflare.'
+  }, null, 2), {
+    status: 200,
+    headers: corsHeaders
   });
 }
 
-// ROTA DE DIAGNÓSTICO (Acesse no navegador: /api/create-preference)
-export async function onRequestGet(context) {
-  const token = (context.env.MP_ACCESS_TOKEN || "").trim();
-
-  let mpStatus = "Token não configurado nas variáveis do Cloudflare";
-
-  if (token) {
-    try {
-      // Testa conexão com a API do Mercado Pago
-      const testRes = await fetch("https://api.mercadopago.com/users/me", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (testRes.ok) {
-        const userData = await testRes.json();
-        mpStatus = {
-          status: "CONECTADO_COM_SUCESSO",
-          usuario: userData.nickname || userData.first_name || "Lojista Mercado Pago",
-          email: userData.email,
-          pais: userData.country_id
-        };
-      } else {
-        mpStatus = {
-          status: "ERRO_DE_TOKEN",
-          detalhe: "O Access Token fornecido é inválido ou expirou."
-        };
-      }
-    } catch (e) {
-      mpStatus = { status: "ERRO_DE_REDE", mensagem: e.message };
-    }
-  }
-
-  return new Response(
-    JSON.stringify({
-      gateway: "Mercado Pago Checkout Pro",
-      servidor: "Cloudflare Pages Function (Edge)",
-      variavel_detectada: token ? `APP_USR-...${token.slice(-6)} (Ativa)` : "FALTANDO: MP_ACCESS_TOKEN",
-      diagnostico_conexao: mpStatus,
-      instrucao: token 
-        ? "Tudo pronto! Seus foliões já podem comprar abadás com PIX ou Cartão em até 12x." 
-        : "Adicione a variável MP_ACCESS_TOKEN nas configurações do Cloudflare Pages e faça o Redeploy."
-    }, null, 2),
-    {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json; charset=utf-8"
-      }
-    }
-  );
-}
-
-// CRIAÇÃO DA PREFERÊNCIA DE PAGAMENTO DINÂMICA (POST)
+// Rota POST: Cria preferência no Mercado Pago e grava na Planilha
 export async function onRequestPost(context) {
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Content-Type": "application/json; charset=utf-8",
-  };
+  const { request, env } = context;
 
   try {
-    const { buyer, items } = await context.request.json().catch(() => ({}));
-
-    if (!items || !items.length) {
-      return new Response(
-        JSON.stringify({ error: "Nenhum abadá informado no carrinho." }),
-        { status: 400, headers: corsHeaders }
-      );
+    const token = env.MP_ACCESS_TOKEN;
+    if (!token) {
+      return new Response(JSON.stringify({
+        error: 'Chave de acesso do Mercado Pago não configurada (MP_ACCESS_TOKEN ausente).'
+      }), { status: 500, headers: corsHeaders });
     }
 
-    const accessToken = (context.env.MP_ACCESS_TOKEN || "").trim();
+    const body = await request.json();
+    const buyer = body.buyer || {};
 
-    if (!accessToken) {
-      return new Response(
-        JSON.stringify({ 
-          error: "MP_ACCESS_TOKEN não configurado no Cloudflare Pages.",
-          details: "Acesse o painel do Cloudflare > Settings > Environment variables e adicione a chave."
-        }),
-        { status: 500, headers: corsHeaders }
-      );
+    // Normalização dos itens recebidos (compatível com lista ou campos avulsos)
+    let rawItems = [];
+    if (Array.isArray(body.items) && body.items.length > 0) {
+      rawItems = body.items;
+    } else if (Array.isArray(body.carrinho) && body.carrinho.length > 0) {
+      rawItems = body.carrinho;
+    } else if (body.title && (body.price || body.unit_price)) {
+      rawItems = [{
+        title: body.title,
+        unit_price: Number(body.price || body.unit_price),
+        quantity: Number(body.quantity) || 1,
+        size: buyer.size || 'M'
+      }];
     }
 
-    // Formata os itens do carrinho para o padrão exigido pelo Mercado Pago
-    const mpItems = items.map((item, idx) => ({
-      id: item.id || `abada_${idx}`,
-      title: `Abadá Prog Folia 2027 [${item.isCustom ? item.customLabel : item.size}]`,
-      quantity: Number(item.quantity),
-      unit_price: Number(item.unitPrice),
-      currency_id: "BRL",
-      description: "Abadá Oficial Dry Fit - Bloco Prog Folia Memento Vivere Vitória/ES"
+    if (rawItems.length === 0) {
+      return new Response(JSON.stringify({
+        error: 'Nenhum abadá informado no carrinho.'
+      }), { status: 400, headers: corsHeaders });
+    }
+
+    // Formatação dos itens para o Mercado Pago
+    const mpItems = rawItems.map(item => ({
+      title: item.title || 'Abadá Prog Folia 2027',
+      quantity: Number(item.quantity) || 1,
+      unit_price: Number(item.unit_price || item.price || 1),
+      currency_id: 'BRL',
+      description: item.description || `Abadá Prog Folia - Tamanho ${item.size || buyer.size || 'M'}`
     }));
 
-    // Cria a preferência de pagamento no Mercado Pago
-    const mpResponse = await fetch("https://api.mercadopago.com/checkout/preferences", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
-        items: mpItems,
-        payer: {
-          name: buyer?.name || "Folião Prog Folia",
-          email: buyer?.email || "contato@progfolia.com.br",
-          phone: {
-            number: buyer?.phone ? buyer.phone.replace(/\D/g, "") : ""
-          }
-        },
-        back_urls: {
-          success: "https://progfolia-2027.pages.dev/#sucesso",
-          failure: "https://progfolia-2027.pages.dev/#erro",
-          pending: "https://progfolia-2027.pages.dev/#pendente"
-        },
-        auto_return: "approved",
-        statement_descriptor: "PROGFOLIA27",
-        payment_methods: {
-          installments: 12 // Permite parcelamento em até 12x
-        }
-      })
-    });
+    // Dados do comprador
+    const payer = {
+      name: buyer.name || 'Folião Prog Folia',
+      email: buyer.email || 'contato@progfolia.com.br'
+    };
 
-    if (!mpResponse.ok) {
-      const errorText = await mpResponse.text();
-      console.error("Erro Mercado Pago API:", errorText);
-      return new Response(
-        JSON.stringify({ 
-          error: "O Mercado Pago recusou a criação do pagamento.", 
-          details: errorText 
-        }),
-        { status: 502, headers: corsHeaders }
-      );
+    if (buyer.cpf) {
+      payer.identification = {
+        type: 'CPF',
+        number: String(buyer.cpf).replace(/\D/g, '')
+      };
     }
 
-    const prefData = await mpResponse.json();
+    if (buyer.phone) {
+      const foneLimpo = String(buyer.phone).replace(/\D/g, '');
+      if (foneLimpo.length >= 10) {
+        payer.phone = {
+          area_code: foneLimpo.slice(0, 2),
+          number: foneLimpo.slice(2)
+        };
+      }
+    }
 
-    // Retorna o link oficial (init_point) gerado com a soma exata dos itens
-    return new Response(
-      JSON.stringify({
-        id: prefData.id,
-        init_point: prefData.init_point
-      }),
-      { status: 200, headers: corsHeaders }
-    );
+    const url = new URL(request.url);
+    const origin = url.origin;
+
+    // Payload de criação da Preferência no Mercado Pago Checkout Pro
+    const preferencePayload = {
+      items: mpItems,
+      payer: payer,
+      back_urls: {
+        success: `${origin}/`,
+        failure: `${origin}/`,
+        pending: `${origin}/`
+      },
+      auto_return: 'approved',
+      statement_descriptor: 'PROGFOLIA',
+      external_reference: `PF-${Date.now()}`
+    };
+
+    // Chamada à API do Mercado Pago
+    const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(preferencePayload)
+    });
+
+    const mpData = await mpResponse.json();
+
+    if (!mpResponse.ok || !mpData.init_point) {
+      return new Response(JSON.stringify({
+        error: mpData.message || mpData.error || 'Erro ao emitir cobrança no Mercado Pago.',
+        detalhes: mpData
+      }), { status: 400, headers: corsHeaders });
+    }
+
+    // Envio automático para a Planilha do Google Sheets (se a variável estiver configurada)
+    if (env.GOOGLE_SHEET_WEBHOOK_URL) {
+      try {
+        const totalCalculado = mpItems.reduce((acc, curr) => acc + (curr.unit_price * curr.quantity), 0);
+        const qtdTotal = mpItems.reduce((acc, curr) => acc + curr.quantity, 0);
+        const nomesItens = mpItems.map(i => i.title).join(' + ');
+
+        await fetch(env.GOOGLE_SHEET_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nome: buyer.name || 'Não informado',
+            whatsapp: buyer.phone || 'Não informado',
+            cpf: buyer.cpf || 'Não informado',
+            tamanho: buyer.size || 'M',
+            quantidade: qtdTotal,
+            item: nomesItens,
+            valor: totalCalculado.toFixed(2),
+            transacao_id: mpData.id || 'Checkout Aberto',
+            status: 'Aguardando Pagamento',
+            observacoes: `Checkout gerado via site. Ref: ${preferencePayload.external_reference}`
+          })
+        });
+      } catch (sheetErr) {
+        // Falha no Google Sheets não bloqueia o comprador de ir pagar no Mercado Pago
+        console.error('Falha de envio para a planilha:', sheetErr);
+      }
+    }
+
+    return new Response(JSON.stringify({
+      id: mpData.id,
+      init_point: mpData.init_point
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
 
   } catch (err) {
-    return new Response(
-      JSON.stringify({ 
-        error: "Falha interna no servidor Cloudflare.", 
-        details: err.message 
-      }),
-      { status: 500, headers: corsHeaders }
-    );
+    return new Response(JSON.stringify({
+      error: 'Erro interno ao processar pedido.',
+      detalhes: err.message
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
   }
 }
