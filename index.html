@@ -1194,12 +1194,10 @@
       // REGRAS DE LOTES E PREÇOS
       PRE_SALE_PRICE: 55,
       FIRST_LOT_PRICE: 65,
-      PRE_SALE_MAX_SALES: 60, // Limite para virada de lote (60 vendas)
+      PRE_SALE_MAX_SALES: 60,
       
       // DATAS DE TRANSIÇÃO (Horário de Brasília GMT-3)
-      // Pré-venda segue até 01/12/2026 às 23:59:59
       PRE_SALE_END_DATE: new Date('2026-12-01T23:59:59-03:00'),
-      // 1º Lote abre em 02/12/2026 e segue até 25/12/2026 às 23:59:59
       FIRST_LOT_END_DATE: new Date('2026-12-25T23:59:59-03:00')
     };
 
@@ -1208,12 +1206,10 @@
       return stored !== null ? parseInt(stored, 10) : 0;
     }
 
-    // Regra Inteligente de Lote (por Quantidade de Vendas e por Data de Calendário)
     function getCurrentLot() {
       const totalSales = getTotalSalesCount();
       const now = new Date();
 
-      // Caso 3: Após 25 de Dezembro (Produção iniciada no dia 26/12)
       if (now > CONFIG.FIRST_LOT_END_DATE) {
         return {
           id: 'producao',
@@ -1228,8 +1224,6 @@
         };
       }
 
-      // Caso 2: 1º LOTE (R$ 65)
-      // Dispara se atingir 60 vendas OU se a data for de 02/12/2026 até 25/12/2026
       if (totalSales >= CONFIG.PRE_SALE_MAX_SALES || now > CONFIG.PRE_SALE_END_DATE) {
         return {
           id: 1,
@@ -1244,8 +1238,6 @@
         };
       }
 
-      // Caso 1: PRÉ-VENDA (R$ 55)
-      // Válida até atingir 60 vendas E até o dia 01/12/2026
       return {
         id: 0,
         price: CONFIG.PRE_SALE_PRICE,
@@ -1932,4 +1924,48 @@
             p.y += p.speedY;
             p.x += Math.sin(p.wobble) * 0.75 + p.speedX;
             p.wobble += p.wobbleSpeed;
-            p.
+            p.angle += p.rotationSpeed;
+            if (p.y > height + 20) { p.y = -20; p.x = Math.random() * width; }
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.angle * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'circle') {
+              ctx.beginPath();
+              ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              const scaleY = Math.cos(p.wobble);
+              ctx.fillRect(-p.size / 2, (-p.size * scaleY) / 2, p.size, p.size * scaleY * 1.35);
+            }
+            ctx.restore();
+          }
+          requestAnimationFrame(render);
+        }
+        render();
+      }
+      setupConfetti('carnivalBgCanvas');
+      setupConfetti('splashConfettiCanvas');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('pixKeyInput').value = CONFIG.PIX_KEY;
+      document.getElementById('pixTitularDisplay').innerText = CONFIG.PIX_TITULAR;
+      const waText = encodeURIComponent("Olá! Estou no site do Prog Folia e tenho dúvidas sobre o bloco de Carnaval.");
+      document.getElementById('btnFaqWhatsApp').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${waText}`;
+
+      const audioEl = document.getElementById('bgAudio');
+      if (audioEl) {
+        audioEl.addEventListener('play', () => { isPlaying = true; updateAudioUI(true); });
+        audioEl.addEventListener('pause', () => { isPlaying = false; updateAudioUI(false); });
+      }
+
+      initCountdown();
+      renderStockBadges();
+      renderCartUI();
+      updateAdminVisibility();
+      initCarnivalConfetti();
+    });
+  </script>
+</body>
+</html>
